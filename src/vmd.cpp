@@ -52,10 +52,6 @@ void VMD::Read(const char* filePath) {
 
     // ファイルのClose
     fclose(fp);
-
-
-
-
 }
 
 std::vector<const char*> VMD::GetMorphList(){
@@ -67,14 +63,5 @@ std::vector<const char*> VMD::GetMorphList(){
             break;
         }
     }
-    return morphList;
-}
-
-std::vector<VMDMorphFrame> VMD::GetMorphFrames(){
-    std::vector<VMDMorphFrame> morphList;
-    for (auto &item : *MorphFrames) {
-       morphList.push_back(item);
-    }
-
     return morphList;
 }

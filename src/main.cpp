@@ -127,12 +127,10 @@ void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs) {
 
 // Morph sphere into box shape.
 void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
-    FbxString lAnimStackName;
+    FbxString lAnimStackName = "MMD Morph";
     FbxTime lTime;
-    int lKeyIndex = 0;
 
     // First animation stack.
-    lAnimStackName = "Morph sphere into box";
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(pScene, lAnimStackName);
 
     // The animation nodes can only exist on AnimLayers therefore it is mandatory to
@@ -147,12 +145,14 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
     //FbxAnimCurve* lCurve = lNurbsAttribute->GetShapeChannel(0, 0, lAnimLayer, true);
 
     auto morphList = vmd->GetMorphList();
-    auto morphFrames = vmd->GetMorphFrames();
+
     for (int i = 0; i < 30; i++) {
+        // Need to be fixed.
+        // THis process is late and might be plotted key on every frame.
         auto lCurve = lNurbsAttribute->GetShapeChannel(0, i, lAnimLayer, true);
         if (lCurve) {
             lCurve->KeyModifyBegin();
-            for (const auto frame: morphFrames) {
+            for (const auto frame: *vmd->MorphFrames) {
                 if (std::string(frame.SkinName) == std::string(morphList[i])) {
 //                    printf("%ld %s\n", frame.FrameNo, frame.SkinName);
                     lTime.SetSecondDouble(frame.FrameNo);
