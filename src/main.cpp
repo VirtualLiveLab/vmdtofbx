@@ -7,9 +7,13 @@
 
 #define SAMPLE_FILENAME "Test.fbx"
 VMD *vmd;
+
 bool CreateScene(FbxScene *pScene);
+
 FbxNode *CreateNurbs(FbxScene *pScene, const char *pName);
+
 void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs);
+
 void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene);
 
 int main(int argc, char **argv) {
@@ -145,8 +149,7 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
     //FbxAnimCurve* lCurve = lNurbsAttribute->GetShapeChannel(0, 0, lAnimLayer, true);
 
     auto morphList = vmd->GetMorphList();
-
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < morphList.size() / (sizeof(int)); i++) {
         // Need to be fixed.
         // THis process is late and might be plotted key on every frame.
         auto lCurve = lNurbsAttribute->GetShapeChannel(0, i, lAnimLayer, true);
