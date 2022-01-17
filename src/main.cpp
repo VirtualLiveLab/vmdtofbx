@@ -155,7 +155,8 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
             for (const auto frame: *vmd->MorphFrames) {
                 if (std::string(frame.SkinName) == std::string(morphList[i])) {
 //                    printf("%ld %s\n", frame.FrameNo, frame.SkinName);
-                    lTime.SetSecondDouble(frame.FrameNo);
+                    int fps = 60;
+                    lTime.SetSecondDouble(frame.FrameNo / fps);
                     lCurve->KeyAdd(lTime);
                     //lCurve->KeySetValue(i, frame.Weight);
                     lCurve->KeySet(i, lTime, frame.Weight, FbxAnimCurveDef::eInterpolationLinear);
