@@ -24,19 +24,57 @@ add_executable(vmdtofbx ${sources})
 # include
 include_directories("${FBX_SDK_DIR}/include")
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    link_directories("${FBX_SDK_DIR}/lib/vs2019/x64/debug")
-    file(GLOB libs ${FBX_SDK_DIR}/lib/vs2019/x64/debug/*-md.lib)
-    target_link_libraries(${PROJECT_NAME}
-            ${libs}
-            wininet.lib)
+
+if (WIN32)
+    #################
+    ## Windows
+    #################
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        link_directories("${FBX_SDK_DIR}/lib/vs2019/x64/debug")
+        file(GLOB libs ${FBX_SDK_DIR}/lib/vs2019/x64/debug/*-md.lib)
+        target_link_libraries(${PROJECT_NAME} ${libs} wininet.lib)
+
+        add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                ${FBX_SDK_DIR}/lib/vs2019/x64/debug/libfbxsdk.dll
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libfbxsdk.dll)
+
+    else ()
+        link_directories("${FBX_SDK_DIR}/lib/vs2019/x64/release")
+        file(GLOB libs ${FBX_SDK_DIR}/lib/vs2019/x64/release/*-md.lib)
+        target_link_libraries(${PROJECT_NAME} ${libs} wininet.lib)
+        add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                ${FBX_SDK_DIR}/lib/vs2019/x64/release/libfbxsdk.dll
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libfbxsdk.dll)
+    endif ()
 else ()
-    link_directories("${FBX_SDK_DIR}/lib/vs2019/x64/release")
-    file(GLOB libs ${FBX_SDK_DIR}/lib/vs2019/x64/release/*-md.lib)
-    target_link_libraries(${PROJECT_NAME}
-            ${libs}
-            wininet.lib)
+    #################
+    ## Linux
+    #################
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        link_directories("${FBX_SDK_DIR}/lib/gcc/x64/debug")
+        file(GLOB libs ${FBX_SDK_DIR}/lib/gcc/x64/debug/*-mdlib.)
+        target_link_libraries(${PROJECT_NAME} ${libs})
+        add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                ${FBX_SDK_DIR}/lib/gcc/x64/debug/libfbxsdk.so
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libfbxsdk.so)
+    else ()
+        link_directories("${FBX_SDK_DIR}/lib/gcc/x64/release")
+        file(GLOB libs ${FBX_SDK_DIR}/lib/gcc/x64/release/*.a)
+        target_link_libraries(${PROJECT_NAME} ${libs})
+        add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                ${FBX_SDK_DIR}/lib/gcc/x64/release/libfbxsdk.so
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libfbxsdk.so)
+    endif ()
 endif ()
+
 
 
 
