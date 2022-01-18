@@ -10,14 +10,15 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 
-# スクリプトの追加
+# add script
+# use fbx sdk sample
 file(GLOB sources
         ./src/*.cpp
         ./src/*.h
-        ./src/Common/*.cxx
-        ./src/Common/*.h
-        ./src/MyOwnWriterReader/*.cxx
-        ./src/MyOwnWriterReader/*.h
+        ${FBX_SDK_DIR}/samples/Common/*.cxx
+        ${FBX_SDK_DIR}/samples/Common/*.h
+        ${FBX_SDK_DIR}/samples/MyOwnWriterReader/*.cxx
+        ${FBX_SDK_DIR}/samples/MyOwnWriterReader/*.h
         )
 add_executable(vmdtofbx ${sources})
 

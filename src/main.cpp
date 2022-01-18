@@ -2,7 +2,7 @@
 #include "vmd.h"
 #include <fbxsdk.h>
 #include <list>
-#include "./Common/Common.h"
+#include "../samples/Common/Common.h"
 
 #define SAMPLE_FILENAME "Test.fbx"
 VMD *vmd;
