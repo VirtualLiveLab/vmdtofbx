@@ -2,7 +2,6 @@
 #include "vmd.h"
 #include <fbxsdk.h>
 #include <list>
-
 #include "./Common/Common.h"
 
 #define SAMPLE_FILENAME "Test.fbx"
@@ -17,6 +16,13 @@ void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs);
 void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene);
 
 int main(int argc, char **argv) {
+
+    const char* filePath = argv[1];
+    //const char *filePath = "F:\\MC2_Miku.vmd";
+
+    vmd = new VMD();
+    vmd->Read(filePath);
+
     FbxManager *lSdkManager = NULL;
     FbxScene *lScene = NULL;
     bool lResult;
@@ -110,9 +116,7 @@ FbxNode *CreateNurbs(FbxScene *pScene, const char *pName) {
 
 // RootNode is bad
 void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs) {
-    const char *filePath = "F:\\test.vmd";
-    vmd = new VMD();
-    vmd->Read(filePath);
+
     auto morphList = vmd->GetMorphList();
     FbxBlendShape *lBlendShape = FbxBlendShape::Create(pScene, "MyBlendShape");
     for (const auto &item: morphList) {
@@ -149,7 +153,8 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
     //FbxAnimCurve* lCurve = lNurbsAttribute->GetShapeChannel(0, 0, lAnimLayer, true);
 
     auto morphList = vmd->GetMorphList();
-    for (int i = 0; i < morphList.size() / (sizeof(int)); i++) {
+    for (int i = 0; i < morphList.size(); i++) {
+
         // Need to be fixed.
         // THis process is late and might be plotted key on every frame.
         auto lCurve = lNurbsAttribute->GetShapeChannel(0, i, lAnimLayer, true);
@@ -157,13 +162,13 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
             lCurve->KeyModifyBegin();
             for (const auto frame: *vmd->MorphFrames) {
                 if (std::string(frame.SkinName) == std::string(morphList[i])) {
-//                    printf("%ld %s\n", frame.FrameNo, frame.SkinName);
-                    int fps = 60;
-                    lTime.SetSecondDouble(frame.FrameNo / fps);
-                    lCurve->KeyAdd(lTime);
+                    printf("%ld %s\n", frame.FrameNo, frame.SkinName);
+                    lTime.SetFrame(frame.FrameNo);
+                    auto index = lCurve->KeyAdd(lTime);
                     //lCurve->KeySetValue(i, frame.Weight);
-                    lCurve->KeySet(i, lTime, frame.Weight, FbxAnimCurveDef::eInterpolationLinear);
+                    lCurve->KeySet(index, lTime, frame.Weight, FbxAnimCurveDef::eInterpolationLinear);
                     //lCurve->KeySetInterpolation(i, FbxAnimCurveDef::eInterpolationCubic);
+
                 }
             }
             lCurve->KeyModifyEnd();

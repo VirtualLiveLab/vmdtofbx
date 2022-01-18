@@ -19,7 +19,7 @@ file(GLOB sources
         ./src/MyOwnWriterReader/*.cxx
         ./src/MyOwnWriterReader/*.h
         )
-add_executable(vmdtofbx ${sources} src/vmd.cpp src/vmd.h)
+add_executable(vmdtofbx ${sources})
 
 # include
 include_directories("${FBX_SDK_DIR}/include")

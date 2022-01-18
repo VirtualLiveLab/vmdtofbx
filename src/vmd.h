@@ -93,6 +93,7 @@ public :
     void Read(const char* filePath);
     std::vector<const char*> GetMorphList();
 
+
 };
 
 #endif //VMDTOFBX_VMD_H

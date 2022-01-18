@@ -1,6 +1,7 @@
+#include <list>
 #include "vmd.h"
 
-void VMD::Read(const char* filePath) {
+void VMD::Read(const char *filePath) {
     //const char *filename = "F:\\test.vmd";
 
     // ファイルのOpen
@@ -16,7 +17,6 @@ void VMD::Read(const char* filePath) {
 
     fread(&Header, sizeof(Header), 1, fp);
     fread(&BoneCount, sizeof(int), 1, fp);
-
 
     MotionFrames = new std::vector<VMDMotionFrame>(BoneCount);
     for (auto &motion: *MotionFrames) {
@@ -34,19 +34,20 @@ void VMD::Read(const char* filePath) {
     fread(&MorphCount, sizeof(int), 1, fp);
 
     MorphFrames = new std::vector<VMDMorphFrame>(MorphCount);
-    for (auto &motion: *MorphFrames) {
-        fread(&motion.SkinName, sizeof(motion.SkinName), 1, fp);
-        fread(&motion.FrameNo,
-              sizeof(motion.FrameNo) +
-              sizeof(motion.Weight),
+    for (auto &morph: *MorphFrames) {
+        fread(&morph.SkinName, sizeof(morph.SkinName), 1, fp);
+        fread(&morph.FrameNo,
+              sizeof(morph.FrameNo) +
+              sizeof(morph.Weight),
               1,
               fp
         );
 
-//        printf("%s\n", motion.SkinName);
-//        printf("%ld\n", motion.FrameNo);
-//        printf("%f\n", motion.Weight);
+//        printf("%s\n", morph.SkinName);
+//        printf("%ld\n", morph.FrameNo);
+//        printf("%f\n", morph.Weight);
     }
+
 
     fread(&CameraCount, sizeof(int), 1, fp);
 
@@ -54,14 +55,23 @@ void VMD::Read(const char* filePath) {
     fclose(fp);
 }
 
-std::vector<const char*> VMD::GetMorphList(){
-    std::vector<const char*> morphList;
-    for (auto &item : *MorphFrames) {
-        if (item.FrameNo == 0) {
-            morphList.push_back(item.SkinName);
-        } else {
-            break;
-        }
-    }
+
+bool contains(std::vector<const char *> &listOfElements, const char *element) {
+    for (const auto &item: listOfElements)
+        if (std::string(item) == std::string(element))
+            return true;
+
+
+    return false;
+}
+
+
+std::vector<const char *> VMD::GetMorphList() {
+    std::vector<const char *> morphList;
+    for (auto &morph: *MorphFrames)
+        if (!contains(morphList, morph.SkinName))
+            morphList.push_back(morph.SkinName);
+
     return morphList;
 }
+
