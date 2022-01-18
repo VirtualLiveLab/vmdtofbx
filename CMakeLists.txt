@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.16)
 project(vmdtofbx)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -54,6 +54,7 @@ if (WIN32)
 else ()
     #################
     ## Linux
+    ## Don't func
     #################
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         link_directories("${FBX_SDK_DIR}/lib/gcc/x64/debug")
