@@ -56,7 +56,7 @@ else ()
     #################
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         link_directories("${FBX_SDK_DIR}/lib/gcc/x64/debug")
-        file(GLOB libs ${FBX_SDK_DIR}/lib/gcc/x64/debug/*-mdlib.)
+        file(GLOB libs ${FBX_SDK_DIR}/lib/gcc/x64/debug/*.a)
         target_link_libraries(${PROJECT_NAME} ${libs})
         add_custom_command(
                 TARGET ${PROJECT_NAME} POST_BUILD
