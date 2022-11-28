@@ -6,7 +6,10 @@ typedef unsigned char BYTE;
 #include <cstdio>
 #include <fstream>
 #include <vector>
-
+#include <map>
+#include <string>
+#include <iostream>
+#include <list>
 using namespace std;
 
 
@@ -78,6 +81,7 @@ struct VMD_CAMERA_COUNT {
 //};
 //
 //
+
 class VMD{
 public:
     int BoneCount;
@@ -90,7 +94,7 @@ public:
     std::vector<VMDMorphFrame> *MorphFrames;
 
 public :
-    void Read(const char* filePath);
+    void Read(const char* filePath, std::map<string, string> maps);
     std::vector<const char*> GetMorphList();
 
 

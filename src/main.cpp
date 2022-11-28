@@ -2,6 +2,8 @@
 #include "vmd.h"
 #include <fbxsdk.h>
 #include <list>
+#include <map>
+#include <sstream>
 #include "../samples/Common/Common.h"
 
 #define SAMPLE_FILENAME "Test.fbx"
@@ -15,13 +17,33 @@ void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs);
 
 void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene);
 
+vector<string> split(const string &s, char delim) {
+    vector<string> elems;
+    stringstream ss(s);
+    string item;
+    while (getline(ss, item, delim)) {
+        if (!item.empty()) {
+            elems.push_back(item);
+        }
+    }
+    return elems;
+}
+
 int main(int argc, char **argv) {
 
     const char* filePath = argv[1];
+
+    std::map<string, string> settings;
+    for (int i = 2; i < argc; ++i) {
+        const char* setStr = argv[i];
+        std::vector<string> sets = split(setStr, '=');
+        if(sets.size() != 2) exit(0);
+        settings[sets[0]] = sets[1];
+    }
     //const char *filePath = "F:\\MC2_Miku.vmd";
 
     vmd = new VMD();
-    vmd->Read(filePath);
+    vmd->Read(filePath, settings);
 
     FbxManager *lSdkManager = NULL;
     FbxScene *lScene = NULL;
@@ -166,7 +188,7 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
                     lTime.SetFrame(frame.FrameNo);
                     auto index = lCurve->KeyAdd(lTime);
                     //lCurve->KeySetValue(i, frame.Weight);
-                    lCurve->KeySet(index, lTime, frame.Weight, FbxAnimCurveDef::eInterpolationLinear);
+                    lCurve->KeySet(index, lTime, frame.Weight * 100.0, FbxAnimCurveDef::eInterpolationLinear);
                     //lCurve->KeySetInterpolation(i, FbxAnimCurveDef::eInterpolationCubic);
 
                 }

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(vmdtofbx)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /execution-charset:SHIFT_JIS /source-charset:UTF-8")
 set(FBX_SDK_DIR "D:/ProgramFiles/Autodesk/FBX/2020.2.1")
 # 64bit
 set(CMAKE_C_FLAGS -m64)
