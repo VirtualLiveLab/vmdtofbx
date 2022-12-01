@@ -1,6 +1,6 @@
 #include "vmd.h"
 
-void VMD::Read(const char *filePath,  std::map<string, string> maps) {
+void VMD::Read(const char *filePath) {
     //const char *filename = "F:\\test.vmd";
 
     // ファイルのOpen
@@ -52,18 +52,6 @@ void VMD::Read(const char *filePath,  std::map<string, string> maps) {
 
     // ファイルのClose
     fclose(fp);
-
-
-    for (auto &frame: *MorphFrames) {
-
-        for (const auto &item: maps){
-            if (strcmp(frame.SkinName, item.first.c_str()) == 0) {
-                char *data = const_cast< char *>(item.second.c_str());
-                for (int i = 0; i < 15; ++i) frame.SkinName[i] = data[i];
-            }
-        }
-
-    }
 }
 
 
@@ -85,4 +73,3 @@ std::vector<const char *> VMD::GetMorphList() {
 
     return morphList;
 }
-

@@ -9,13 +9,14 @@
 #define SAMPLE_FILENAME "Test.fbx"
 VMD *vmd;
 
-bool CreateScene(FbxScene *pScene);
+bool CreateScene(FbxScene *pScene, std::map<string, string> setting);
 
 FbxNode *CreateNurbs(FbxScene *pScene, const char *pName);
 
-void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs);
+void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs,std::map<string, string> settingg);
 
-void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene);
+void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene, std::map<string, string> setting);
+vector<string> convert(vector<const char *> frames, std::map<string, string> maps);
 
 vector<string> split(const string &s, char delim) {
     vector<string> elems;
@@ -43,7 +44,7 @@ int main(int argc, char **argv) {
     //const char *filePath = "F:\\MC2_Miku.vmd";
 
     vmd = new VMD();
-    vmd->Read(filePath, settings);
+    vmd->Read(filePath);
 
     FbxManager *lSdkManager = NULL;
     FbxScene *lScene = NULL;
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
     InitializeSdkObjects(lSdkManager, lScene);
 
     // Create the scene.
-    lResult = CreateScene(lScene);
+    lResult = CreateScene(lScene, settings);
 
     if (lResult == false) {
         FBXSDK_printf("\n\nAn error occurred while creating the scene...\n");
@@ -84,13 +85,13 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-bool CreateScene(FbxScene *pScene) {
+bool CreateScene(FbxScene *pScene, map<string, string> setting) {
     FbxNode *lNurbs = CreateNurbs(pScene, "Face");
     // Build the node tree.
     FbxNode *lRootNode = pScene->GetRootNode();
     lRootNode->AddChild(lNurbs);
-    MapShapesOnNurbs(pScene, lNurbs);
-    AnimateNurbs(lNurbs, pScene);
+    MapShapesOnNurbs(pScene, lNurbs, setting);
+    AnimateNurbs(lNurbs, pScene, setting);
     return true;
 }
 
@@ -135,18 +136,35 @@ FbxNode *CreateNurbs(FbxScene *pScene, const char *pName) {
     return lNode;
 }
 
+vector<string> convert(vector<const char *> frames, std::map<string, string> maps){
+    std::vector<string> convertList;
 
+    for (auto &frame: frames) {
+        std::string conv = std::string (frame);
+
+        for (const auto &item: maps) {
+            if (frame == item.first) { conv = item.second; }
+        }
+
+
+        convertList.push_back(conv);
+    }
+
+    return convertList;
+}
 // RootNode is bad
-void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs) {
+void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs, map<string, string> setting) {
 
-    auto morphList = vmd->GetMorphList();
+    vector<const char*> list = vmd->GetMorphList();
+    auto morphList = convert(list, setting);
     FbxBlendShape *lBlendShape = FbxBlendShape::Create(pScene, "MyBlendShape");
     for (const auto &item: morphList) {
         char *convertItem;
-        FbxAnsiToUTF8(item, convertItem);
+        FbxAnsiToUTF8(item.c_str(), convertItem);
+
         FbxBlendShapeChannel *channel = FbxBlendShapeChannel::Create(pScene, convertItem);
         FbxFree(convertItem);
-        FbxShape *lShape = FbxShape::Create(pScene, item);
+        FbxShape *lShape = FbxShape::Create(pScene, item.c_str());
         //lShape->InitControlPoints(8*7);
         channel->AddTargetShape(lShape);
         lBlendShape->AddBlendShapeChannel(channel);
@@ -156,7 +174,7 @@ void MapShapesOnNurbs(FbxScene *pScene, FbxNode *pNurbs) {
 }
 
 // Morph sphere into box shape.
-void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
+void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene, std::map<string, string> setting) {
     FbxString lAnimStackName = "MMD Morph";
     FbxTime lTime;
 
@@ -174,17 +192,21 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
     // The stretched shape is at index 0 because it was added first to the nurbs.
     //FbxAnimCurve* lCurve = lNurbsAttribute->GetShapeChannel(0, 0, lAnimLayer, true);
 
-    auto morphList = vmd->GetMorphList();
-    for (int i = 0; i < morphList.size(); i++) {
-
-        // Need to be fixed.
-        // THis process is late and might be plotted key on every frame.
+    vector<const char*> list = vmd->GetMorphList();
+    auto morphList = convert(list, setting);
+    int i = 0;
+    for (const auto &morph: morphList){
         auto lCurve = lNurbsAttribute->GetShapeChannel(0, i, lAnimLayer, true);
         if (lCurve) {
             lCurve->KeyModifyBegin();
             for (const auto frame: *vmd->MorphFrames) {
-                if (std::string(frame.SkinName) == std::string(morphList[i])) {
-                    printf("%ld %s\n", frame.FrameNo, frame.SkinName);
+
+                std::string name = std::string(frame.SkinName);
+                for (const auto &item: setting)
+                    if (std::string(frame.SkinName) == item.first) name = item.second;
+
+                if (name == std::string(morph)) {
+                    printf("%ld %s\n", frame.FrameNo, morph.c_str());
                     lTime.SetFrame(frame.FrameNo);
                     auto index = lCurve->KeyAdd(lTime);
                     //lCurve->KeySetValue(i, frame.Weight);
@@ -195,6 +217,7 @@ void AnimateNurbs(FbxNode *pNurbs, FbxScene *pScene) {
             }
             lCurve->KeyModifyEnd();
         }
+        i++;
     }
 }
 

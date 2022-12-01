@@ -94,7 +94,7 @@ public:
     std::vector<VMDMorphFrame> *MorphFrames;
 
 public :
-    void Read(const char* filePath, std::map<string, string> maps);
+    void Read(const char* filePath);
     std::vector<const char*> GetMorphList();
 
 
