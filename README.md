@@ -3,6 +3,7 @@
 現在VMDに含まれる表情データのみを球体に張り付けてFbxにすることが可能
 自分でBuildするためには、FbxSDKの設定が必要なので注意してください
 
+作者はUnityでfbxを取り込んでAnimationを取りこんでます。不具合が
 BugとかあったらIssueくれたらうれしいです
 
 ## Environment
