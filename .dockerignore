@@ -1,0 +1,18 @@
+# unused directories
+.env*
+.git
+.gitignore
+.mypy_cache
+.python-version
+.pre-commit-config.yaml
+.venv
+.vscode
+
+__pycache__
+log
+poetry.lock
+
+# docs
+docs/*
+README.md
+LICENSE

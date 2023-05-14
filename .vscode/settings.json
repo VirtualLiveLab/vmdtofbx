@@ -1,0 +1,30 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "cSpell.words": [
+        "pydantic",
+        "pyright"
+    ],
+    "editor.formatOnSave": true,
+    "flake8.args": [
+        "--max-line-length=125",
+        "--ignore=E203,W503"
+    ],
+    "flake8.path": [
+        ".venv/bin/pflake8"
+    ],
+    "isort.check": true,
+    "isort.importStrategy": "fromEnvironment",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.formatting.blackArgs": [
+        "--line-length=125",
+        "--target-version=py310"
+    ],
+    "python.languageServer": "Pylance",
+    "python.linting.enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyPath": ".venv/bin/mypy"
+}

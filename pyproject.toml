@@ -1,0 +1,70 @@
+[tool.poetry]
+name = "dpy-template"
+version = "0.1.0"
+description = ""
+authors = ["sushi-chaaaan <mail@sushichan.live>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+discord-py = { git = "https://github.com/Rapptz/discord.py.git", rev = "master", extras = [
+    "voice",
+    "speed",
+] }
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+mypy = "^0.991"
+isort = "^5.11.4"
+pyproject-flake8 = "^6.0.0.post1"
+flake8-isort = "^6.0.0"
+poethepoet = "^0.20.0"
+python-dotenv = "^0.21.1"
+pre-commit = "^3.1.0"
+
+[tool.black]
+target-version = ["py310"]
+line-length = 125
+
+[tool.flake8]
+max-line-length = 125
+extend-exclude = [".venv"]
+extend-ignore = ["E203", "W503"]
+
+[tool.isort]
+profile = "black"
+line_length = 125
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.10"
+exclude = [".venv"]
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+
+[tool.poe.tasks]
+# lint
+lint.sequence = ["_mypy_stub", "_pflake8", "_isort-c", "_mypy"]
+lint.ignore_fail = "return_zero"
+_pflake8 = "poetry run pflake8 ."
+_isort-c = "poetry run isort -c ."
+_mypy = "poetry run mypy ."
+_mypy_stub = "mypy --install-types --non-interactive"
+
+# format
+format.sequence = ["_black", "_isort"]
+fmt.sequence = ["format"]
+format.ignore_fail = "return_zero"
+_black = "poetry run black ."
+_isort = "poetry run isort ."
+
+# export
+export = "poetry export -f requirements.txt -o requirements.txt --only main --without-hashes"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

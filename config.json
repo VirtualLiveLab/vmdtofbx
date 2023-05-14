@@ -1,0 +1,7 @@
+{
+    "cogs": [
+        "src.cogs.cog"
+    ],
+    "log_level": "DEBUG",
+    "prefix": "!"
+}

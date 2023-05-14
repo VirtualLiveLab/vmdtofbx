@@ -1,0 +1,17 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "enabledManagers": [
+        "docker-compose",
+        "dockerfile",
+        "github-actions",
+        "poetry",
+        "pre-commit"
+    ],
+    "extends": [
+        "config:base"
+    ],
+    "major": {
+        "enabled": false
+    },
+    "timezone": "Asia/Tokyo"
+}
