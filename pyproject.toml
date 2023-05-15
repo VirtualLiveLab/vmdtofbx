@@ -11,6 +11,7 @@ discord-py = { git = "https://github.com/Rapptz/discord.py.git", rev = "master",
     "voice",
     "speed",
 ] }
+aiohttp = "^3.8.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
