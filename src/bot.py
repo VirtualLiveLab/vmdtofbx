@@ -10,6 +10,8 @@ import discord
 from discord.ext import commands
 
 from const.log import command_log, login_log
+
+# from utils.finder import Finder
 from utils.logger import getMyLogger
 
 if not __debug__:
@@ -45,6 +47,11 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         self.logger.info(login_log(user=self.user, guild_amount=len(self.guilds)))
+        # channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
+        # embed = discord.Embed(description="ミクが起動したよ!", color=0x66DDCC)
+        # await chennel.send(embed=embed)
+        await self.change_presence(activity=discord.Game(name="プロセカ"))
+        pass
 
     async def load_exts(self):
         ext_paths: list[str] = self.config.get("cogs", None)
