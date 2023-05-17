@@ -12,7 +12,7 @@
             "",
             "if TYPE_CHECKING:",
             "    # import some original class",
-            "    from src.bot import Bot",
+            "    from app.bot import Bot",
             "",
             "    pass",
             "",
@@ -28,7 +28,6 @@
         ],
         "description": ""
     },
-
     "cog_group": {
         "prefix": "cog_group",
         "body": [
