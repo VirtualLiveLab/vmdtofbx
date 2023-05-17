@@ -12,6 +12,7 @@ discord-py = { git = "https://github.com/Rapptz/discord.py.git", rev = "master",
     "speed",
 ] }
 aiohttp = "^3.8.4"
+pydantic = "^1.10.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
