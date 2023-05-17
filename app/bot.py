@@ -9,9 +9,9 @@ import discord
 # import sentry_sdk
 from discord.ext import commands
 
+from app.ready import ready_embed
 from const.log import command_log, login_log
-
-# from utils.finder import Finder
+from utils.finder import Finder
 from utils.logger import getMyLogger
 
 if not __debug__:
@@ -25,6 +25,10 @@ class Bot(commands.Bot):
         # self.init_sentry()
         self.config = self.load_config()
         self.logger = self.get_logger()
+
+        # failed extension list
+        self.failed_exts: list[str] = []
+        self.failed_views: list[str] = []
 
         # set to None if you want to sync as global commands
         self.app_cmd_sync_target = discord.Object(int(os.environ["GUILD_ID"]))
@@ -47,11 +51,14 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         self.logger.info(login_log(user=self.user, guild_amount=len(self.guilds)))
-        # channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
-        # embed = discord.Embed(description="ミクが起動したよ!", color=0x66DDCC)
-        # await chennel.send(embed=embed)
+        channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
+        embed = ready_embed(
+            latency=self.latency,
+            failed_exts=self.failed_exts,
+            failed_views=self.failed_views,
+        )
+        await channel.send(embed=embed)
         await self.change_presence(activity=discord.Game(name="プロセカ"))
-        pass
 
     async def load_exts(self):
         ext_paths: list[str] = self.config.get("cogs", None)
