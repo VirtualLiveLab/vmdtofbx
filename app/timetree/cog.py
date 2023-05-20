@@ -48,7 +48,6 @@ class TimeTree(commands.Cog):
         try:
             events = await client.get_upcoming_events()
         except Exception as e:
-            print(e)
             self.bot.logger.error(e)
             return discord.Embed(
                 title="TimeTreeからの情報取得に失敗しました",
