@@ -16,10 +16,10 @@ class Event(BaseModel):
     start_timezone: str
     end_at: datetime  # "2019-03-18T09:53:33.123Z"
     end_timezone: str
-    recurrence: list[str]
-    description: str
+    recurrence: list[str] | None = [""]
+    description: str | None = ""
     location: str
-    url: HttpUrl
+    url: HttpUrl | None
     updated_at: datetime  # "2019-03-18T09:53:33.123Z"
     created_at: datetime  # "2019-03-18T09:53:33.123Z"
 

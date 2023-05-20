@@ -3,7 +3,7 @@ import datetime
 from discord import Embed
 
 from const.enums import Color
-from timetree import Event
+from timetree import Event  # type: ignore
 
 
 def today_event_embed(
@@ -36,10 +36,10 @@ def today_event_embed(
             name=event.title,
             value="終日"
             if event.all_day
-            else "{start} ~ {end}\n[TimeTreeで見る]({url})".format(
+            else "{start} ~ {end}{url}".format(
                 start=event.start_at.strftime("%H:%M"),
                 end=event.end_at.strftime("%H:%M"),
-                url=event.url,
+                url=f"\n[TimeTreeで見る]({str(event.url)})" if event.url else "",
             ),
             inline=False,
         )

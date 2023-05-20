@@ -36,6 +36,7 @@ class Bot(commands.Bot):
         # set intents
         intents = discord.Intents.all()
         intents.typing = False
+        intents.presences = False
 
         super().__init__(
             command_prefix=self.config.get("prefix", "!"),
@@ -68,6 +69,7 @@ class Bot(commands.Bot):
         for ext in ext_paths:
             try:
                 await self.load_extension(ext)
+                self.logger.debug(f"Loaded {ext}")
             except Exception as e:
                 self.logger.exception(f"Failed to load {ext}", exc_info=e)
 

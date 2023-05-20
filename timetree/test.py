@@ -1,6 +1,11 @@
 import asyncio
 
-from timetree import Client
+from timetree.client import Client
+
+if not __debug__:
+    from dotenv import load_dotenv
+
+    load_dotenv()
 
 
 async def main():

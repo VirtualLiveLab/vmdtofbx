@@ -1,6 +1,7 @@
 {
     "cogs": [
-        "src.cogs.cog"
+        "app.core.chat.chat",
+        "app.timetree.cog"
     ],
     "log_level": "DEBUG",
     "prefix": "!"
