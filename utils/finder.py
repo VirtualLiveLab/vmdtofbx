@@ -5,10 +5,11 @@ import discord
 from discord import Thread
 from discord.abc import GuildChannel, PrivateChannel
 
-from utils.const import literal
-from utils.logger import getMyLogger
+from .const import literal
+from .logger import getMyLogger
+from .validator import validate
 
-DiscordChannelT = TypeVar("DiscordChannelT", bound=Union[GuildChannel, PrivateChannel, Thread])
+T = TypeVar("T", bound=Union[GuildChannel, PrivateChannel, Thread])
 
 
 class Finder:
@@ -25,17 +26,13 @@ class Finder:
         ...
 
     @overload
-    async def find_channel(
-        self,
-        channel_id: int,
-        type: list[type[DiscordChannelT]] | type[DiscordChannelT],
-    ) -> DiscordChannelT:
+    async def find_channel(self, channel_id: int, type: type[T]) -> T:
         ...
 
     async def find_channel(
         self,
         channel_id: int,
-        type: list[type[DiscordChannelT]] | type[DiscordChannelT] | None = None,
+        type: type[T] | None = None,
     ):
         channel = self.bot.get_channel(channel_id)
         if not channel:
@@ -48,16 +45,17 @@ class Finder:
         if not type:
             return channel
 
-        if isinstance(type, list):
-            for t in type:
-                if not isinstance(channel, t):
-                    self.logger.exception(literal.CHANNEL_NOT_FOUND)
-                    raise TypeError(f"Channel is not a {t}")
-        else:
-            if not isinstance(channel, type):
-                self.logger.exception(literal.CHANNEL_NOT_FOUND)
-                raise TypeError(f"Channel is not a {type}")
-        return channel
+        return validate(channel, type)
+
+        # if isinstance(type, list):
+        #     for t in type:
+        #         if isinstance(channel, t):
+        #             return channel
+        # else:
+        #     if not isinstance(channel, type):
+        #         self.logger.exception(literal.CHANNEL_NOT_FOUND)
+        #         raise TypeError(f"Channel is not a {type}")
+        # return channel
 
     async def find_log_channel(self) -> discord.TextChannel:
         return await self.find_channel(int(os.environ["LOG_CHANNEL_ID"]), type=discord.TextChannel)

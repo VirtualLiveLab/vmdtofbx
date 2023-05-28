@@ -1,10 +1,10 @@
-import os
 from typing import TYPE_CHECKING
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
+from utils.validator import validate
 
 if TYPE_CHECKING:
     # import some original class
@@ -81,7 +81,7 @@ class Vote(commands.Cog):
             option25,
         ]
 
-        channel = interaction.channel
+        channel = validate(interaction.channel, discord.TextChannel)
         y_or_n = True if all([opt is None for opt in opts]) else False
 
         if y_or_n:
