@@ -1,28 +1,35 @@
-[tool.poetry]
-name = "dpy-template"
+[project]
+name = "mikubot-v2"
 version = "0.1.0"
-description = ""
-authors = ["sushi-chaaaan <mail@sushichan.live>"]
+description = "Add a short description here"
+authors = [{ name = "sushi-chaaaan", email = "mail@sushichan.live" }]
+dependencies = [
+    "aiohttp~=3.8.4",
+    "pydantic~=1.10.8",
+    "discord-py[speed,voice] @ git+https://github.com/Rapptz/discord.py.git",
+]
 readme = "README.md"
+requires-python = ">= 3.10"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-discord-py = { git = "https://github.com/Rapptz/discord.py.git", rev = "master", extras = [
-    "voice",
-    "speed",
-] }
-aiohttp = "^3.8.4"
-pydantic = "^1.10.7"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.group.dev.dependencies]
-black = "^23.3.0"
-mypy = "^0.991"
-isort = "^5.11.4"
-pyproject-flake8 = "^6.0.0.post1"
-flake8-isort = "^6.0.0"
-poethepoet = "^0.20.0"
-python-dotenv = "^1.0.0"
-pre-commit = "^3.1.0"
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "black~=23.3.0",
+    "mypy~=1.3.0",
+    "isort~=5.12.0",
+    "pyproject-flake8~=6.0.0.post1",
+    "flake8-isort~=6.0.0",
+    "poethepoet~=0.20.0",
+    "python-dotenv~=1.0.0",
+    "pre-commit~=3.3.2",
+    "pip-tools~=6.13.0",
+]
+[tool.hatch.metadata]
+allow-direct-references = true
 
 
 [tool.black]
@@ -49,25 +56,36 @@ disallow_any_generics = true
 check_untyped_defs = true
 no_implicit_reexport = true
 
-[tool.poe.tasks]
-# lint
-lint.sequence = ["_mypy_stub", "_pflake8", "_isort-c", "_mypy"]
-lint.ignore_fail = "return_zero"
-_pflake8 = "poetry run pflake8 ."
-_isort-c = "poetry run isort -c ."
-_mypy = "poetry run mypy ."
-_mypy_stub = "mypy --install-types --non-interactive"
+[tool.rye.scripts]
+lint = { chain = ["lint:mypy-stub", "lint:flake8", "lint:isort", "lint:mypy"] }
+"lint:flake8" = "rye run pflake8 ."
+"lint:isort" = "rye run isort -c ."
+"lint:mypy" = "rye run mypy ."
+"lint:mypy-stub" = "mypy --install-types --non-interactive"
 
-# format
-format.sequence = ["_black", "_isort"]
-fmt.sequence = ["format"]
-format.ignore_fail = "return_zero"
-_black = "poetry run black ."
-_isort = "poetry run isort ."
+format = { chain = ["format:isort", "format:black"] }
+"format:isort" = "rye run isort ."
+"format:black" = "rye run black ."
 
-# export
-export = "poetry export -f requirements.txt -o requirements.txt --only main --without-hashes"
+up = { cmd = ["python", "-B", "-O", "main.py"] }
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+
+export = { cmd = ["python", "-B", "-m", "rye-export"] }
+# [tool.poe.tasks]
+# # lint
+# lint.sequence = ["_mypy_stub", "_pflake8", "_isort-c", "_mypy"]
+# lint.ignore_fail = "return_zero"
+# _pflake8 = "rye run pflake8 ."
+# _isort-c = "rye run isort -c ."
+# _mypy = "rye run mypy ."
+# _mypy_stub = "mypy --install-types --non-interactive"
+
+# # format
+# format.sequence = ["_black", "_isort"]
+# fmt.sequence = ["format"]
+# format.ignore_fail = "return_zero"
+# _black = "rye run black ."
+# _isort = "rye run isort ."
+
+# # export
+# export = "poetry export -f requirements.txt -o requirements.txt --only main --without-hashes"
