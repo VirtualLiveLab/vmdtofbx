@@ -5,9 +5,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
-from timetree import Client
 from app.timetree.components.timetree import today_event_embed
 from const.enums import Color
+from timetree import Client
 from utils.finder import Finder
 from utils.time import TimeUtils
 
