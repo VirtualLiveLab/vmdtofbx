@@ -1,8 +1,4 @@
-from typing import Optional, Union
 from discord import ui
-from discord.emoji import Emoji
-from discord.enums import ButtonStyle
-from discord.partial_emoji import PartialEmoji
 
 
 class VoteView(ui.View):
