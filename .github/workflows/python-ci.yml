@@ -17,7 +17,8 @@ on:
     paths:
       - "**.py"
       - "pyproject.toml"
-      - "poetry.lock"
+      # - "poetry.lock"
+      - "requirements.lock"
       - "requirements.txt"
   pull_request:
     # The branches below must be a subset of the branches above
@@ -25,10 +26,9 @@ on:
     paths:
       - "**.py"
       - "pyproject.toml"
-      - "poetry.lock"
+      # - "poetry.lock"
+      - "requirements.lock"
       - "requirements.txt"
-  schedule:
-    - cron: "15 5 * * 5"
 
 jobs:
   analyze:
@@ -52,14 +52,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install poetry
-        run: pipx install poetry
+      # - name: Install poetry
+      #   run: pipx install poetry
 
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-          cache: "poetry"
-      - run: poetry install
+          cache: "pip"
+      - run: pip install -r requirements.txt
 
       - name: Install dependencies
         run: |
