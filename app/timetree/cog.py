@@ -44,7 +44,10 @@ class TimeTree(commands.Cog):
         return
 
     async def get_timetree_embed(self):
-        client = TimeTreeClient()
+        client = TimeTreeClient(
+            api_key=os.getenv("API_KEY", ""),
+            calendar_id=os.getenv("CALENDAR_ID", ""),
+        )
         try:
             events = await client.get_upcoming_events()
         except Exception as e:

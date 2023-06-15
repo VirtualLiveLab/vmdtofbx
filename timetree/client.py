@@ -1,25 +1,23 @@
 import logging
-import os
 from typing import Literal
 
 import aiohttp
 
 from timetree.object.event import Event
 
-keyAPI = os.getenv("apikey")
 calenderID = "yJojmgmD7kt9"  # 2023
 
 
 class Client:
-    def __init__(self) -> None:
-        self.api_key: str = os.getenv("API_KEY", "")
-        self.calender_id: str = os.getenv("CALENDER_ID", "")
+    def __init__(self, api_key: str, calendar_id: str) -> None:
+        self.api_key: str = api_key
+        self.calendar_id: str = calendar_id
         self.logger = logging.getLogger(__name__)
 
     async def get_upcoming_events(self, days: Literal[1, 2, 3, 4, 5, 6, 7] = 1) -> list[Event]:
         # https://developers.timetreeapp.com/ja/docs/api/oauth-app#list-upcoming-events
         upcoming_url = (
-            f"https://timetreeapis.com/calendars/{self.calender_id}/upcoming_events?days={str(days)}&timezone=Asia/Tokyo"
+            f"https://timetreeapis.com/calendars/{self.calendar_id}/upcoming_events?days={str(days)}&timezone=Asia/Tokyo"
         )
         headers = {
             "Accept": "application/vnd.timetree.v1+json",
