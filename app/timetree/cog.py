@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 
 from app.timetree.components.timetree import today_event_embed
 from const.enums import Color
-from timetree import Client
+from timetree import Client as TimeTreeClient
 from utils.finder import Finder
 from utils.time import TimeUtils
 
@@ -44,7 +44,7 @@ class TimeTree(commands.Cog):
         return
 
     async def get_timetree_embed(self):
-        client = Client()
+        client = TimeTreeClient()
         try:
             events = await client.get_upcoming_events()
         except Exception as e:
