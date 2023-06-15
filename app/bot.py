@@ -11,6 +11,7 @@ from discord.ext import commands
 
 from app.ready import ready_embed
 from const.log import command_log, login_log
+from utils.file import get_cog_path, glob_files
 from utils.finder import Finder
 from utils.logger import getMyLogger
 
@@ -62,16 +63,20 @@ class Bot(commands.Bot):
         await self.change_presence(activity=discord.Game(name="プロセカ"))
 
     async def load_exts(self):
-        ext_paths: list[str] = self.config.get("cogs", None)
-        if ext_paths is None:
+        # load cogs automatically
+        # "cog.py" under the "app" directory will loaded
+        raw_cogs = glob_files("./app", "cog.py")
+        cogs = [get_cog_path(path) for path in raw_cogs]
+
+        if cogs is None or cogs == []:
             return
 
-        for ext in ext_paths:
+        for cog in cogs:
             try:
-                await self.load_extension(ext)
-                self.logger.debug(f"Loaded {ext}")
+                await self.load_extension(cog)
+                self.logger.debug(f"Loaded {cog}")
             except Exception as e:
-                self.logger.exception(f"Failed to load {ext}", exc_info=e)
+                self.logger.exception(f"Failed to load {cog}", exc_info=e)
 
     async def sync_app_commands(self):
         try:
