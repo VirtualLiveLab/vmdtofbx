@@ -29,15 +29,21 @@ class Client:
                 self.logger.debug(res.status)
                 self.logger.debug(data)
 
-                return [
-                    Event(
-                        id=elm["id"],
-                        type=elm["type"],
-                        **elm["attributes"],
-                        raw_data=elm,
-                    )
-                    for elm in data["data"]
-                ]
+                try:
+                    events = [
+                        Event(
+                            id=elm["id"],
+                            type=elm["type"],
+                            **elm["attributes"],
+                            raw_data=elm,
+                        )
+                        for elm in data["data"]
+                    ]
+                except Exception as e:
+                    self.logger.error(e)
+                    return []
+                else:
+                    return events
 
 
 # def getTodaysEventsJson(title):
