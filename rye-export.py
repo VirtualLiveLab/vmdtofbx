@@ -11,6 +11,8 @@ def main():
     with open(REQUIREMENTS_TXT_PATH, "w") as fr:
         fr.writelines(requirements_txt)
 
+    print("Exported to requirements.txt!")
+
 
 if __name__ == "__main__":
     main()
