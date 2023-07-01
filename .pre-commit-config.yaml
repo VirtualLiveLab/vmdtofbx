@@ -8,7 +8,7 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: pretty-format-json
-        args: [--autofix, --indent, "4"]
+        args: [--autofix, --indent, "4", "--no-sort-keys"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
