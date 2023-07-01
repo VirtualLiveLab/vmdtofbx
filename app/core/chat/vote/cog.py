@@ -21,7 +21,7 @@ class Vote(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
 
-    @app_commands.command(name="vote", description="最大20択で投票を作成するよ！選択肢を省略するとYes/Noになるよ！")
+    @app_commands.command(name="vote", description="最大20択で投票を作成するよ！選択肢をすべて省略するとはい/いいえの投票になるよ！")
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     @app_commands.rename(**(__renamed_options | {"question": "質問文"}))
     async def vote(
