@@ -1,3 +1,4 @@
+import os
 from typing import TYPE_CHECKING
 
 import discord
@@ -36,12 +37,14 @@ class Chat(commands.Cog):
         return
 
     @app_commands.command(name="miku", description="ミクさんが返事をしてくれるよ！")
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def call_miku(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=False)
         await interaction.followup.send("MIKU!")
         return
 
     @app_commands.command(name="helloworld", description="Hello World!")
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def hello_world(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=False)
         embed = hello_world.embed(interaction.user)
