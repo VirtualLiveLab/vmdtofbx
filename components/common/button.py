@@ -1,47 +1,21 @@
-from typing import Literal, Optional, TypedDict, Union
+from typing import Literal, TypedDict
 
 import discord
 from discord import Emoji, PartialEmoji, ui
 from discord.interactions import Interaction
 
 
-class ButtonStyleRequired(TypedDict):
+class _ButtonStyleRequired(TypedDict):
     color: Literal["blurple", "grey", "green", "red"]
 
 
-class ButtonStyle(ButtonStyleRequired, total=False):
+class ButtonStyle(_ButtonStyleRequired, total=False):
     disabled: bool
     emoji: str | Emoji | PartialEmoji | None
     row: Literal[0, 1, 2, 3, 4]
 
 
-class BaseButton(ui.Button):  # type: ignore
-    def __init__(
-        self,
-        style: discord.ButtonStyle = discord.ButtonStyle.secondary,
-        label: Optional[str] = None,
-        disabled: bool = False,
-        custom_id: Optional[str] = None,
-        url: Optional[str] = None,
-        emoji: Optional[Union[str, Emoji, PartialEmoji]] = None,
-        row: Optional[int] = None,
-    ):
-        super().__init__(
-            style=style,
-            label=label,
-            disabled=disabled,
-            custom_id=custom_id,
-            url=url,
-            emoji=emoji,
-            row=row,
-        )
-        pass
-
-    async def callback(self, interaction: Interaction):
-        pass
-
-
-class Button(BaseButton):
+class Button(ui.Button):  # type: ignore
     def __init__(self, label: str | None = None, /, *, style: ButtonStyle, custom_id: str | None = None):
         __style = discord.ButtonStyle[style.get("color", "grey")]
         __disabled = style.get("disabled", False)
@@ -60,7 +34,7 @@ class Button(BaseButton):
         pass
 
 
-class LinkButton(BaseButton):
+class LinkButton(ui.Button):  # type: ignore
     def __init__(self, label: str | None = None, /, *, url: str, custom_id: str | None = None):
         super().__init__(
             style=discord.ButtonStyle.link,
