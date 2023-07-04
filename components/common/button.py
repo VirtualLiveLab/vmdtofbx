@@ -12,7 +12,6 @@ class ButtonStyleRequired(TypedDict):
 class ButtonStyle(ButtonStyleRequired, total=False):
     disabled: bool
     emoji: str | Emoji | PartialEmoji | None
-    label: str | None
     row: Literal[0, 1, 2, 3, 4]
 
 
@@ -43,18 +42,17 @@ class BaseButton(ui.Button):  # type: ignore
 
 
 class Button(BaseButton):
-    def __init__(self, *, style: ButtonStyle, custom_id: str | None = None):
-        __style = discord.ButtonStyle[style.get("color", "secondary")]
+    def __init__(self, label: str | None = None, /, *, style: ButtonStyle, custom_id: str | None = None):
+        __style = discord.ButtonStyle[style.get("color", "grey")]
         __disabled = style.get("disabled", False)
         __emoji = style.get("emoji", None)
-        __label = style.get("label", None)
         __row = style.get("row", None)
         super().__init__(
             style=__style,
-            label=__label,
             disabled=__disabled,
             emoji=__emoji,
             row=__row,
+            label=label,
             custom_id=custom_id,
         )
 
@@ -63,7 +61,7 @@ class Button(BaseButton):
 
 
 class LinkButton(BaseButton):
-    def __init__(self, *, url: str, label: str, custom_id: str | None = None):
+    def __init__(self, label: str | None = None, /, *, url: str, custom_id: str | None = None):
         super().__init__(
             style=discord.ButtonStyle.link,
             url=url,
