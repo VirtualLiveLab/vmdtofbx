@@ -9,7 +9,7 @@ import discord
 # import sentry_sdk
 from discord.ext import commands
 
-from app.ready import ready_embed
+from app import embed
 from const.log import command_log, login_log
 from utils.file import get_cog_path, glob_files
 from utils.finder import Finder
@@ -54,12 +54,12 @@ class Bot(commands.Bot):
     async def on_ready(self):
         self.logger.info(login_log(user=self.user, guild_amount=len(self.guilds)))
         channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
-        embed = ready_embed(
+        emb = embed.ready_embed(
             latency=self.latency,
             failed_exts=self.failed_exts,
             failed_views=self.failed_views,
         )
-        await channel.send(embed=embed)
+        await channel.send(embed=emb)
         await self.change_presence(activity=discord.Game(name="プロセカ"))
 
     async def load_exts(self):

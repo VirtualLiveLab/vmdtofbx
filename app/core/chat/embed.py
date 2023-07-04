@@ -5,7 +5,7 @@ from const.enums import Color
 from utils.time import TimeUtils
 
 
-def embed(
+def user_embed(
     user: discord.Member | discord.User,
 ) -> Embed:
     embed = Embed(

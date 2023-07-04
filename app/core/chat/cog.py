@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from app.core.chat.components import hello_world
+from app.core.chat import embed
 
 if TYPE_CHECKING:
     # import some original class
@@ -47,8 +47,8 @@ class Chat(commands.Cog):
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def hello_world(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=False)
-        embed = hello_world.embed(interaction.user)
-        await interaction.followup.send(embed=embed)
+        emb = embed.user_embed(interaction.user)
+        await interaction.followup.send(embed=emb)
         return
 
 

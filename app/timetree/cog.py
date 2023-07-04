@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
-from app.timetree.components.timetree import today_event_embed
+from app.timetree.embed import today_event_embed
 from const.enums import Color
 from timetree import Client as TimeTreeClient
 from utils.finder import Finder

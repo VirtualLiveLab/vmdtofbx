@@ -3,7 +3,7 @@ import datetime
 from discord import Embed
 
 from const.enums import Color
-from timetree import Event  # type: ignore
+from timetree import Event
 
 
 def today_event_embed(
