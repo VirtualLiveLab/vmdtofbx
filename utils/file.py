@@ -1,10 +1,13 @@
 import pathlib
 
 
-def glob_files(dir: str, path: str) -> list[pathlib.Path]:
-    p = pathlib.Path(dir)
-    return list(p.glob(f"**/{path}"))
+def get_cwd() -> pathlib.Path:
+    return pathlib.Path.cwd()
 
 
-def get_cog_path(path: pathlib.Path) -> str:
+def glob_files(dir: pathlib.Path, file_name: str) -> list[pathlib.Path]:
+    return list(dir.glob(f"**/{file_name}"))
+
+
+def convert_to_cog(path: pathlib.Path) -> str:
     return path.as_posix().removesuffix(path.suffix).replace("/", ".")
