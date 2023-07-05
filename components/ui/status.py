@@ -301,9 +301,9 @@ class StatusUI:
         """
         Getter
         ----
-        Returns the embed object of the UI.\\
-        Using this property is not recommended.\\
-        Useful if you want to edit the embed directly like `embed.add_field()`.
+        Returns the deepcopy of the UI. Usually you don't need to use this.\\
+        Useful if you want to edit the embed directly like `embed.add_field()`.\\
+        `[NOTICE]` If you use this property, you must set the new embed object via `StatusUI._embed = new_embed`.
 
         Raises
         ----
