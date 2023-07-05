@@ -25,10 +25,11 @@ class Buhi(commands.Cog):
         guild_ids=[int(os.environ["GUILD_ID"])],
     )
 
-    @commands.Cog.listener("on_member_join")
-    async def add_minou_role_automatically(self, member: discord.Member):
-        await self.add_minou_role(member)
-        return
+    # TODO DiscordのOnboarding機能に移行しない場合コメントアウトを外す
+    # @commands.Cog.listener("on_member_join")
+    # async def add_minou_role_automatically(self, member: discord.Member):
+    #     await self.add_minou_role(member)
+    #     return
 
     @group.command(
         name="add",
