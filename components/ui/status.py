@@ -22,12 +22,12 @@ class StatusContext:
 
     Attributes
     ----
-    key: :class:`str`
+    key: `str`
         The key to identify the context.
-    message: :class:`str`
+    message: `str`
         The message to display. This will be appeared in the embed description.
-    status: :class:`Status`
-        The status of the context. Defaults to :class:`Status.INITIALIZED`.
+    status: `Status`
+        The status of the context. Defaults to `Status.INITIALIZED`.
     """
 
     def __init__(self, *, key: str, message: str, initial_status: Status = Status.INITIALIZED) -> None:
@@ -81,7 +81,7 @@ class StatusContext:
 
         Args
         ----
-        message (`:class:str`):
+        message (`str`):
             The message to display.
         """
         self.message = message
@@ -93,7 +93,7 @@ class StatusContext:
 
         Args
         ----
-        message (`:class:str`):
+        message (`str`):
             The message to display.
         """
         self.message = message
@@ -105,7 +105,7 @@ class StatusContext:
 
         Args
         ----
-        message (`:class:str`):
+        message (`str`):
             The message to display.
         """
         self.message = message
@@ -117,7 +117,7 @@ class StatusContext:
 
         Args
         ----
-        message (`:class:str`):
+        message (`str`):
             The message to display.
         """
         self.message = message
@@ -142,13 +142,13 @@ class StatusUI:
 
         Args
         ----
-        color (`:class:int` | `None`):
+        color (`int`):
             The colour code of the embed. Defaults to 0x000000.
-        title (`:class:str` | `None`):
+        title (`str` | `None`):
             The title of the embed. Defaults to None.
-        url (`:class:str` | `None`):
+        url (`str` | `None`):
             The URL of the embed. This will be set as title url. Defaults to None.
-        timestamp (`:class:datetime.datetime` | `None`):
+        timestamp (`datetime.datetime` | `None`):
             The timestamp of the embed content. This is an aware datetime.
             If a naive datetime is passed, it is converted to an aware
             datetime with the local timezone. Defaults to None.
@@ -188,7 +188,7 @@ class StatusUI:
 
         Returns
         ----
-        `:class:int` | `None`:
+        `int` | `None`:
             The color code of the embed.
         """
         return self.embed_dict.get("color", None)
@@ -202,7 +202,7 @@ class StatusUI:
 
         Args
         ----
-        value (`:class:int`):
+        value (`int`):
             The color code to set.
         """
         current = self.embed_dict
@@ -217,7 +217,7 @@ class StatusUI:
 
         Args
         ----
-        message (`:class:discord.Message`):
+        message (`discord.Message`):
             The message object to set.
         """
         self.__message = message
@@ -228,16 +228,16 @@ class StatusUI:
 
         Args
         ----
-        key (`:class:str`):
+        key (`str`):
             Key of the context.
-        message (`:class:str`):
+        message (`str`):
             Message of the context. this will be displayed in the UI.
-        status (`:class:Status` | `None`):
+        status (`Status`):
             Initial status of context. Defaults to Status.INITIALIZED.
 
         Raises
         ----
-        `:class:KeyError`:
+        `KeyError`:
             If the `key` already exists.
         """
         if key in self.__contexts.keys():
@@ -251,12 +251,12 @@ class StatusUI:
 
         Args
         ----
-        key (`:class:str`):
+        key (`str`):
             Key of the context you want to remove.
 
         Raises
         ----
-        `:class:KeyError`:
+        `KeyError`:
             If the `key` does not exist.
         """
         if key not in self.__contexts.keys():
@@ -271,18 +271,18 @@ class StatusUI:
 
         Args
         ----
-        key (`:class:str`):
+        key (`str`):
             Key of the context you want to update.
-        status (`:class:Status` | `None`):
+        status (`Status` | `None`):
             New status of the context. Defaults to None.
-        message (`:class:str` | `None`):
+        message (`str` | `None`):
             New message of the context. Defaults to None.
 
         Raises
         ----
-        `:class:ValueError`:
+        `ValueError`:
             If both `status` and `message` are None.
-        `:class:KeyError`:
+        `KeyError`:
             If the `key` does not exist.
         """
         if status is None and message is None:
@@ -307,11 +307,11 @@ class StatusUI:
 
         Raises
         ----
-        `:class:ValueError`: If the description of embed is too long.
+        `ValueError`: If the description of embed is too long.
 
         Returns
         ----
-        `:class:discord.Embed`
+        `discord.Embed`
             The embed object of the UI.
         """
         current = self.embed_dict
@@ -330,7 +330,7 @@ class StatusUI:
 
         Args
         ----
-        value (`:class:discord.Embed`):
+        value (`discord.Embed`):
             The embed object to set.
         """
         self.embed_dict = value.to_dict()
@@ -345,16 +345,16 @@ class StatusUI:
 
         Args
         ----
-        target (`:class:discord.abc.Messageable` |`:class:discord.Interaction` | `:class:discord.Webhook`):
+        target (`discord.abc.Messageable` |`discord.Interaction` | `discord.Webhook`):
             The target to send the UI.
-        ephemeral: :class:`bool`
+        ephemeral: `bool`
             Indicates if the message should only be visible to the user who started the interaction.
             If a view is sent with an ephemeral message and it has no timeout set then the timeout
             is set to 15 minutes. Defaults to `False`.
 
         Raises
         ----
-        `:class:TimeoutError`:
+        `TimeoutError`:
             If the `interaction.token` is expired.
         """
         if isinstance(target, discord.Interaction):
