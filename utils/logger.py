@@ -5,7 +5,7 @@ import pathlib
 from discord.utils import _ColourFormatter
 
 
-def getMyLogger(name: str) -> logging.Logger:  # name: __name__
+def getMyLogger(name: str, level: str = "DEBUG") -> logging.Logger:  # name: __name__
     # make log directory
     pathlib.Path("log").mkdir(exist_ok=True)
 
@@ -25,9 +25,9 @@ def getMyLogger(name: str) -> logging.Logger:  # name: __name__
     file_handler.setFormatter(literal_formatter)
 
     # set level
-    logger.setLevel(logging.DEBUG)
-    streamHandler.setLevel(logging.DEBUG)
-    file_handler.setLevel(logging.DEBUG)
+    logger.setLevel(level)
+    streamHandler.setLevel(level)
+    file_handler.setLevel(level)
 
     # add handler
     if not logger.hasHandlers():

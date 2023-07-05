@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os
 from typing import Any
 
@@ -24,8 +23,8 @@ if not __debug__:
 class Bot(commands.Bot):
     def __init__(self, **kwargs):
         # self.init_sentry()
-        self.config = self.load_config()
-        self.logger = self.get_logger()
+        self.config = {"prefix": "!"}
+        self.logger = getMyLogger(__name__, level="DEBUG")
 
         # failed extension list
         self.failed_exts: list[str] = []
@@ -97,16 +96,9 @@ class Bot(commands.Bot):
             self.logger.debug(command_log(ctx))
 
     def load_config(self) -> dict[str, Any]:
-        with open("config.json", "r") as f:
+        conf = get_cwd() / "config.json"
+        with conf.open("r") as f:
             return json.load(f)
-
-    def get_logger(self) -> logging.Logger:
-        logger = getMyLogger(__name__)
-        try:
-            logger.setLevel(self.config.get("log_level", "INFO"))
-        except (TypeError, ValueError):
-            logger.setLevel("INFO")
-        return logger
 
     # def init_sentry(self) -> None:
     #     sentry_sdk.init(
