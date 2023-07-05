@@ -5,7 +5,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from const.enums import Role
+from components.embed.status import StatusEmbed
+from const.enums import Color, Role
 from utils.validator import validate
 
 if TYPE_CHECKING:
@@ -39,19 +40,39 @@ class Buhi(commands.Cog):
     async def add_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
         author = validate(interaction.user, discord.Member)
+        status = StatusEmbed(
+            default_label=f"{member.mention}に部費未納ロールを付与しています...",
+            color=Color.MIKU,
+        )
         if not self.check_kaikei_role(author):
-            await interaction.followup.send("権限がありません。")
+            embed = status.fail(
+                label="このコマンドを実行する権限がありません。",
+                color=Color.WARNING,
+            )
+            await interaction.followup.send(embed=embed)
             return
 
-        await interaction.followup.send(f"{member.display_name}に部費未納ロールを付与しています...")
+        msg = await interaction.followup.send(embed=status.loading(), wait=True)
 
         try:
             await self.add_minou_role(member)
         except Exception as e:
             self.bot.logger.error(e)
-            await interaction.followup.send(f"エラー: {member.display_name}に部費未納ロールを付与できませんでした。\n\n{e}")
+            embed = status.fail(
+                label=f"{member.mention}に部費未納ロールを付与できませんでした。",
+                color=Color.WARNING,
+            )
+            embed.add_field(
+                name="エラー内容",
+                value=f"```\n{e}\n```",
+            )
+            await msg.edit(embed=embed)
         else:
-            await interaction.followup.send(content=f"{member.display_name}に部費未納ロールを付与しました！")
+            embed = status.success(
+                label=f"{member.mention}に部費未納ロールを付与しました！",
+                color=Color.SUCCESS,
+            )
+            await msg.edit(embed=embed)
         return
 
     @group.command(
@@ -62,30 +83,50 @@ class Buhi(commands.Cog):
     async def remove_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
         author = validate(interaction.user, discord.Member)
+        status = StatusEmbed(
+            default_label=f"{member.mention}から部費未納ロールを消去しています...",
+            color=Color.MIKU,
+        )
         if not self.check_kaikei_role(author):
-            await interaction.followup.send("権限がありません。")
+            embed = status.fail(
+                label="このコマンドを実行する権限がありません。",
+                color=Color.WARNING,
+            )
+            await interaction.followup.send(embed=embed)
             return
 
-        await interaction.followup.send(f"{member.display_name}から部費未納ロールを消去しています...")
+        msg = await interaction.followup.send(embed=status.loading(), wait=True)
 
         try:
             await self.remove_minou_role(member)
         except Exception as e:
             self.bot.logger.error(e)
-            await interaction.followup.send(f"エラー: {member.display_name}から部費未納ロールを消去できませんでした。\n\n{e}")
+            embed = status.fail(
+                label=f"{member.mention}から部費未納ロールを消去できませんでした。",
+                color=Color.WARNING,
+            )
+            embed.add_field(
+                name="エラー内容",
+                value=f"```\n{e}\n```",
+            )
+            await msg.edit(embed=embed)
         else:
-            await interaction.followup.send(content=f"{member.display_name}から部費未納ロールを消去しました！")
+            embed = status.success(
+                label=f"{member.mention}から部費未納ロールを消去しました！",
+                color=Color.SUCCESS,
+            )
+            await msg.edit(embed=embed)
         return
 
     async def add_minou_role(self, member: discord.Member):
         if Role.BUHI_MINOU in [r.id for r in member.roles]:
-            return
+            raise Exception(f"{member.mention}には既に部費未納ロールが付与されています。")
         await member.add_roles(discord.Object(id=Role.BUHI_MINOU))
         return
 
     async def remove_minou_role(self, member: discord.Member):
         if Role.BUHI_MINOU not in [r.id for r in member.roles]:
-            return
+            raise Exception(f"{member.mention}には部費未納ロールが付与されていません。")
         await member.remove_roles(discord.Object(id=Role.BUHI_MINOU))
         return
 
