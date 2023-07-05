@@ -93,7 +93,7 @@ class StatusUI:
         url: Any | None = None,
         timestamp: datetime.datetime | None = None,
     ):
-        self.contexts = {}
+        self.__contexts: dict[str, StatusContext] = {}
         self.embed_dict = Embed(
             color=color,
             title=title,
@@ -102,14 +102,6 @@ class StatusUI:
         ).to_dict()
         self.__message: discord.Message
         self.__logger = getMyLogger(__name__)
-
-    @property
-    def contexts(self) -> dict[str, StatusContext]:
-        return self.__contexts
-
-    @contexts.setter
-    def contexts(self, value: dict[str, StatusContext]) -> None:
-        self.__contexts = value
 
     @property
     def embed_dict(self) -> EmbedData:
@@ -167,7 +159,7 @@ class StatusUI:
     @property
     def _embed(self) -> Embed:
         current = self.embed_dict
-        description = "\n".join(ctx.to_string() for ctx in self.contexts.values())
+        description = "\n".join(ctx.to_string() for ctx in self.__contexts.values())
         if len(description) > 4096:
             raise ValueError("Description is too long")
         current["description"] = description
