@@ -69,10 +69,12 @@ class Buhi(commands.Cog):
                 message=f"{member.mention}に部費未納ロールを付与できませんでした。",
             )
             ui.color = Color.WARNING
-            ui._embed.add_field(
+            _e = ui._embed
+            _e.add_field(
                 name="エラー内容",
                 value=f"```\n{e}\n```",
             )
+            ui._embed = _e
             await ui.sync()
         else:
             ui.update(
@@ -113,10 +115,12 @@ class Buhi(commands.Cog):
                 message=f"{member.mention}から部費未納ロールを消去できませんでした。",
             )
             ui.color = Color.WARNING
-            ui._embed.add_field(
+            _e = ui._embed
+            _e.add_field(
                 name="エラー内容",
                 value=f"```\n{e}\n```",
             )
+            ui._embed = _e
             await ui.sync()
         else:
             ui.update(
