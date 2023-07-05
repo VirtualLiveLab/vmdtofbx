@@ -6,8 +6,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from components.ui.status import Status, StatusUI
-from const.enums import Color
+from components.ui.status import StatusUI
+from const.enums import Color, Status
 
 if TYPE_CHECKING:
     # import some original class

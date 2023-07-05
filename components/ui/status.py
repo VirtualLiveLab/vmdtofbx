@@ -1,11 +1,11 @@
 import datetime
 from copy import deepcopy
-from enum import IntEnum, auto
 
 import discord
 from discord import Embed, Webhook
 from discord.types.embed import Embed as EmbedData
 
+from const.enums import Status
 from utils.logger import getMyLogger
 
 # TODO: add loading emoji in VLL and switch to it
@@ -14,13 +14,6 @@ LOADING_EMOJI = "<a:loading:1126058379756978186>"
 SUCCESSFUL_EMOJI = "\N{WHITE HEAVY CHECK MARK}"
 FAILED_EMOJI = "\N{CROSS MARK}"
 PANIC_EMOJI = "\N{COLLISION SYMBOL}"
-
-
-class Status(IntEnum):
-    INITIALIZED = auto()
-    IN_PROGRESS = auto()
-    SUCCESS = auto()
-    FAILED = auto()
 
 
 class StatusContext:

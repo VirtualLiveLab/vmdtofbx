@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import IntEnum, auto
 
 
 class Color(IntEnum):
@@ -19,3 +19,10 @@ class Role(IntEnum):
     # KAIKEI = 1089948443444781122
     KAIKEI = 1125981661595705476
     BUHI_MINOU = 1125981626447429642
+
+
+class Status(IntEnum):
+    INITIALIZED = auto()
+    IN_PROGRESS = auto()
+    SUCCESS = auto()
+    FAILED = auto()
