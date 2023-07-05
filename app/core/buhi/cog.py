@@ -6,6 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from const.enums import Role
+from utils.validator import validate
 
 if TYPE_CHECKING:
     # import some original class
@@ -36,7 +37,8 @@ class Buhi(commands.Cog):
     @app_commands.guild_only()
     async def add_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
-        if not self.check_kaikei_role(member):
+        author = validate(interaction.user, discord.Member)
+        if not self.check_kaikei_role(author):
             await interaction.followup.send("権限がありません。")
             return
 
@@ -58,7 +60,8 @@ class Buhi(commands.Cog):
     @app_commands.guild_only()
     async def remove_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
-        if not self.check_kaikei_role(member):
+        author = validate(interaction.user, discord.Member)
+        if not self.check_kaikei_role(author):
             await interaction.followup.send("権限がありません。")
             return
 
@@ -74,6 +77,8 @@ class Buhi(commands.Cog):
         return
 
     async def add_minou_role(self, member: discord.Member):
+        if Role.BUHI_MINOU in [r.id for r in member.roles]:
+            return
         await member.add_roles(discord.Object(id=Role.BUHI_MINOU))
         return
 
