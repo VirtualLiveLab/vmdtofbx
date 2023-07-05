@@ -1,7 +1,5 @@
 import asyncio
-import json
 import os
-from typing import Any
 
 import discord
 
@@ -94,11 +92,6 @@ class Bot(commands.Bot):
         @self.before_invoke
         async def write_debug_log(ctx: commands.Context) -> None:  # type: ignore
             self.logger.debug(command_log(ctx))
-
-    def load_config(self) -> dict[str, Any]:
-        conf = get_cwd() / "config.json"
-        with conf.open("r") as f:
-            return json.load(f)
 
     # def init_sentry(self) -> None:
     #     sentry_sdk.init(
