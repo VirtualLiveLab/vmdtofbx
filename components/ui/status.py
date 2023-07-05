@@ -372,9 +372,9 @@ class StatusUI:
         else:
             self.__message = await target.send(embed=self._embed)
 
-    async def edit(self) -> None:
+    async def sync(self) -> None:
         """
-        Edit the UI. This will fail if you did not set the message object to the UI.
+        Sync the UI to current state. Fail if both of `StatusUI.set_message()` and `StatusUI.send()` are not called.
         """
         try:
             await self.__message.edit(embed=self._embed)

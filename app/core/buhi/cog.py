@@ -73,7 +73,7 @@ class Buhi(commands.Cog):
                 name="エラー内容",
                 value=f"```\n{e}\n```",
             )
-            await ui.edit()
+            await ui.sync()
         else:
             ui.update(
                 key="ROLE_STATUS",
@@ -81,7 +81,7 @@ class Buhi(commands.Cog):
                 message=f"{member.mention}に部費未納ロールを付与しました！",
             )
             ui.color = Color.SUCCESS
-            await ui.edit()
+            await ui.sync()
         return
 
     @group.command(
@@ -117,7 +117,7 @@ class Buhi(commands.Cog):
                 name="エラー内容",
                 value=f"```\n{e}\n```",
             )
-            await ui.edit()
+            await ui.sync()
         else:
             ui.update(
                 key="ROLE_STATUS",
@@ -125,7 +125,7 @@ class Buhi(commands.Cog):
                 message=f"{member.mention}から部費未納ロールを消去しました！",
             )
             ui.color = Color.SUCCESS
-            await ui.edit()
+            await ui.sync()
         return
 
     async def add_minou_role(self, member: discord.Member):

@@ -37,17 +37,17 @@ class TestCog(commands.Cog):
             status=Status.IN_PROGRESS,
             message="ステータス1を実行中",
         )
-        await ui.edit()
+        await ui.sync()
         # await msg.edit(embed=status.to_embed())
 
         await asyncio.sleep(5)
         ui.update(key="STATUS_1", status=Status.SUCCESS, message="ステータス1を完了")
         ui.update(key="STATUS_2", status=Status.IN_PROGRESS, message="ステータス2を実行中")
-        await ui.edit()
+        await ui.sync()
 
         await asyncio.sleep(5)
         ui.update(key="STATUS_2", status=Status.FAILED, message="ステータス2でエラーが発生")
-        await ui.edit()
+        await ui.sync()
 
 
 async def setup(bot: "Bot"):
