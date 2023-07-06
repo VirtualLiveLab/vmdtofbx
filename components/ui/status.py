@@ -389,15 +389,17 @@ class StatusUI:
 
         Args
         ----
-        func (`Callable[[Embed], Embed]`):
+        func (`Callable[[Embed, dict[str, Any]], Embed]`):
             The function to edit the embed object.
-            This function must take an `Embed` object as an argument and return an `Embed` object.
+            This function must take an `Embed` object and `dict[str, Any]` as arguments and return an `Embed` object.
+        kwargs:
+            The arguments to pass to `func`. This will be passed as `dict[str, Any]` the second argument of `func`.
 
         Examples
         ----
         ```py
         ui = StatusUI()
-        ui._dangerously_edit_embed(lambda e: e.add_field(name="foo", value="bar"))
+        ui._dangerously_edit_embed(lambda e, d: e.add_field(name="foo", value=d["bar"]), bar="baz")
         ```
         """
         current = self._embed
