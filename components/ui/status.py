@@ -1,5 +1,7 @@
 import datetime
+from collections.abc import Callable
 from copy import deepcopy
+from typing import Any
 
 import discord
 from discord import Embed, Webhook
@@ -380,3 +382,24 @@ class StatusUI:
             await self.__message.edit(embed=self._embed)
         except Exception as e:
             self.__logger.error(f"Failed to edit message: {e}")
+
+    def _dangerously_edit_embed(self, func: Callable[[Embed, dict[str, Any]], Embed], **kwargs) -> None:
+        """
+        Edit the embed object of the UI directly. This is dangerous and not recommended to use.
+
+        Args
+        ----
+        func (`Callable[[Embed], Embed]`):
+            The function to edit the embed object.
+            This function must take an `Embed` object as an argument and return an `Embed` object.
+
+        Examples
+        ----
+        ```py
+        ui = StatusUI()
+        ui._dangerously_edit_embed(lambda e: e.add_field(name="foo", value="bar"))
+        ```
+        """
+        current = self._embed
+        self._embed = func(current, kwargs)
+        return
