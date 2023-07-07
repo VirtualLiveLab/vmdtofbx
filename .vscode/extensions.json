@@ -6,6 +6,7 @@
         "ms-python.flake8",
         "ms-python.isort",
         "shardulm94.trailing-spaces",
-        "exiasr.hadolint"
+        "exiasr.hadolint",
+        "ms-python.mypy-type-checker"
     ]
 }

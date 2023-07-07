@@ -25,6 +25,7 @@
     "python.languageServer": "Pylance",
     "python.linting.enabled": true,
     "python.linting.lintOnSave": true,
-    "python.linting.mypyEnabled": true,
-    "python.linting.mypyPath": ".venv/bin/mypy"
+    "mypy-type-checker.args": [
+        "--config-file=pyproject.toml"
+    ]
 }
