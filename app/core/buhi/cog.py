@@ -32,12 +32,9 @@ class Buhi(commands.Cog):
     #     await self.add_minou_role(member)
     #     return
 
-    @group.command(
-        name="add",
-        description="部費未納ロールを付与します",
-    )
+    @group.command(name="add", description="部費未納ロールを付与します")  # type: ignore
     @app_commands.guild_only()
-    async def add_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
+    async def add_minou_role_command(self, interaction: discord.Interaction, member: discord.Member) -> None:
         await interaction.response.defer()
         author = validate(interaction.user, discord.Member)
         ui = StatusUI(color=Color.MIKU)
@@ -71,7 +68,7 @@ class Buhi(commands.Cog):
             ui.color = Color.WARNING
             ui._dangerously_edit_embed(
                 lambda em, d: em.add_field(name="エラー内容", value=f"```\n{d['error']}\n```"),
-                error=e,
+                kwargs={"error": e},
             )
             await ui.sync()
         else:
@@ -84,10 +81,7 @@ class Buhi(commands.Cog):
             await ui.sync()
         return
 
-    @group.command(
-        name="remove",
-        description="部費未納ロールを消去します",
-    )
+    @group.command(name="remove", description="部費未納ロールを消去します")  # type: ignore
     @app_commands.guild_only()
     async def remove_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
@@ -115,7 +109,7 @@ class Buhi(commands.Cog):
             ui.color = Color.WARNING
             ui._dangerously_edit_embed(
                 lambda em, d: em.add_field(name="エラー内容", value=f"```\n{d['error']}\n```"),
-                error=e,
+                kwargs={"error": e},
             )
             await ui.sync()
         else:
@@ -128,21 +122,21 @@ class Buhi(commands.Cog):
             await ui.sync()
         return
 
-    async def add_minou_role(self, member: discord.Member):
+    async def add_minou_role(self, member: discord.Member) -> None:
         if Role.BUHI_MINOU in [r.id for r in member.roles]:
             raise Exception(f"{member.mention}には既に部費未納ロールが付与されています。")
         await member.add_roles(discord.Object(id=Role.BUHI_MINOU))
         return
 
-    async def remove_minou_role(self, member: discord.Member):
+    async def remove_minou_role(self, member: discord.Member) -> None:
         if Role.BUHI_MINOU not in [r.id for r in member.roles]:
             raise Exception(f"{member.mention}には部費未納ロールが付与されていません。")
         await member.remove_roles(discord.Object(id=Role.BUHI_MINOU))
         return
 
-    def check_kaikei_role(self, member: discord.Member):
+    def check_kaikei_role(self, member: discord.Member) -> bool:
         return Role.KAIKEI in [r.id for r in member.roles]
 
 
-async def setup(bot: "Bot"):
+async def setup(bot: "Bot") -> None:
     await bot.add_cog(Buhi(bot))

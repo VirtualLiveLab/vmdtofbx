@@ -20,8 +20,8 @@ class TestCog(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
 
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore
     @app_commands.command(name="try-status", description="StatusUIのテストコマンド")
-    @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def try_status(self, interaction: discord.Interaction):
         await interaction.response.defer()
 
@@ -50,5 +50,5 @@ class TestCog(commands.Cog):
         await ui.sync()
 
 
-async def setup(bot: "Bot"):
+async def setup(bot: "Bot") -> None:
     await bot.add_cog(TestCog(bot))

@@ -17,7 +17,7 @@ def remove_file_extension(filename: str) -> str:
     return filename.removesuffix(Path(filename).suffix)
 
 
-def write_log(filename: str, data: str, append: bool = True):
+def write_log(filename: str, data: str, append: bool = True) -> None:
     m = "a" if append else "w"
     with open(filename, mode=m) as f:
         f.write(data)

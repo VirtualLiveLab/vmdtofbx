@@ -31,7 +31,7 @@ Author Name: {author_name}
 """
 
 
-def command_log(ctx: commands.Context) -> str:  # type: ignore
+def command_log(ctx: commands.Context) -> str:
     return COMMAND_LOG.format(
         command_name=ctx.command.name if ctx.command else "None",
         guild_id=ctx.guild.id if ctx.guild else "None",
@@ -48,7 +48,7 @@ Bot is ready
 """
 
 
-def login_log(user: discord.ClientUser | None, guild_amount: int):
+def login_log(user: discord.ClientUser | None, guild_amount: int) -> str:
     return LOGIN_LOG.format(
         user=user,
         id=user.id if user else "None",

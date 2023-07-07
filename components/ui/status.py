@@ -1,7 +1,7 @@
 import datetime
 from collections.abc import Callable
 from copy import deepcopy
-from typing import Any
+from typing import Any, TypeVar
 
 import discord
 from discord import Embed, Webhook
@@ -16,6 +16,8 @@ LOADING_EMOJI = "<a:loading:1126058379756978186>"
 SUCCESSFUL_EMOJI = "\N{WHITE HEAVY CHECK MARK}"
 FAILED_EMOJI = "\N{CROSS MARK}"
 PANIC_EMOJI = "\N{COLLISION SYMBOL}"
+
+T = TypeVar("T", bound=dict[str, Any])
 
 
 class StatusContext:
@@ -383,7 +385,7 @@ class StatusUI:
         except Exception as e:
             self.__logger.error(f"Failed to edit message: {e}")
 
-    def _dangerously_edit_embed(self, func: Callable[[Embed, dict[str, Any]], Embed], **kwargs) -> None:
+    def _dangerously_edit_embed(self, func: Callable[[Embed, T], Embed], *, kwargs: T) -> None:
         """
         Edit the embed object of the UI directly. This is dangerous and not recommended to use.
 

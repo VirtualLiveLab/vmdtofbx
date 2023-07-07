@@ -2,18 +2,18 @@ from datetime import datetime, timedelta, timezone, tzinfo
 
 
 class JST(tzinfo):
-    def __repr__(self):
-        return self.tzname(self)
+    def __repr__(self) -> str:
+        return self.tzname()
 
-    def utcoffset(self, dt):
+    def utcoffset(self, dt: datetime | None = None) -> timedelta:
         # ローカル時刻とUTCの差分に等しいtimedeltaを返す
         return timedelta(hours=9)
 
-    def tzname(self, dt):
+    def tzname(self, dt: datetime | None = None) -> str:
         # タイムゾーン名を返す
         return "Asia/Tokyo"
 
-    def dst(self, dt):
+    def dst(self, dt: datetime | None = None) -> timedelta:
         # 夏時間を返す。有効でない場合はtimedelta(0)を返す
         return timedelta(0)
 

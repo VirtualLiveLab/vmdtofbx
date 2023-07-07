@@ -15,7 +15,7 @@ class ButtonStyle(_ButtonStyleRequired, total=False):
     row: Literal[0, 1, 2, 3, 4]
 
 
-class Button(ui.Button):  # type: ignore
+class Button(ui.Button):
     def __init__(self, label: str | None = None, /, *, style: ButtonStyle, custom_id: str | None = None):
         __style = discord.ButtonStyle[style.get("color", "grey")]
         __disabled = style.get("disabled", False)
@@ -30,11 +30,11 @@ class Button(ui.Button):  # type: ignore
             custom_id=custom_id,
         )
 
-    async def callback(self, interaction: Interaction):
+    async def callback(self, interaction: Interaction) -> None:
         pass
 
 
-class LinkButton(ui.Button):  # type: ignore
+class LinkButton(ui.Button):
     def __init__(self, label: str | None = None, /, *, url: str, custom_id: str | None = None):
         super().__init__(
             style=discord.ButtonStyle.link,
@@ -43,5 +43,5 @@ class LinkButton(ui.Button):  # type: ignore
             custom_id=custom_id,
         )
 
-    async def callback(self, interaction: Interaction):
+    async def callback(self, interaction: Interaction) -> None:
         pass

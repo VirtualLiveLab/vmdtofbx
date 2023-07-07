@@ -2,7 +2,7 @@ REQUIREMENTS_TXT_PATH = "requirements.txt"
 REQUIREMENTS_LOCK_PATH = "requirements.lock"
 
 
-def main():
+def main() -> None:
     requirements_txt: list[str]
     with open(REQUIREMENTS_LOCK_PATH) as f:
         lock = f.readlines()

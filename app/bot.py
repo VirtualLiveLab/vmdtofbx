@@ -19,7 +19,7 @@ if not __debug__:
 
 
 class Bot(commands.Bot):
-    def __init__(self, **kwargs):
+    def __init__(self) -> None:
         # self.init_sentry()
         self.config = {"prefix": "!"}
         self.logger = getMyLogger(__name__, level="DEBUG")
@@ -39,16 +39,15 @@ class Bot(commands.Bot):
         super().__init__(
             command_prefix=self.config.get("prefix", "!"),
             intents=intents,
-            **kwargs,
         )
 
-    async def setup_hook(self):
+    async def setup_hook(self) -> None:
         await self.set_pre_invoke_hook()
         await self.load_exts()
         await self.sync_app_commands()
         await self.setup_views()
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.logger.info(login_log(user=self.user, guild_amount=len(self.guilds)))
         channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
         emb = embed.ready_embed(
@@ -59,7 +58,7 @@ class Bot(commands.Bot):
         await channel.send(embed=emb)
         await self.change_presence(activity=discord.Game(name="プロセカ"))
 
-    async def load_exts(self):
+    async def load_exts(self) -> None:
         # load cogs automatically
         # "cog.py" under the "app" directory will loaded
         cwd = get_cwd()
@@ -77,7 +76,7 @@ class Bot(commands.Bot):
             except Exception as e:
                 self.logger.exception(f"Failed to load {cog}", exc_info=e)
 
-    async def sync_app_commands(self):
+    async def sync_app_commands(self) -> None:
         try:
             synced = await self.tree.sync(guild=self.app_cmd_sync_target)
         except Exception as e:
@@ -85,12 +84,12 @@ class Bot(commands.Bot):
         else:
             self.logger.info(f"{len(synced)} Application commands synced successfully")
 
-    async def setup_views(self):
+    async def setup_views(self) -> None:
         pass
 
-    async def set_pre_invoke_hook(self):
+    async def set_pre_invoke_hook(self) -> None:
         @self.before_invoke
-        async def write_debug_log(ctx: commands.Context) -> None:  # type: ignore
+        async def write_debug_log(ctx: commands.Context) -> None:
             self.logger.debug(command_log(ctx))
 
     # def init_sentry(self) -> None:
@@ -102,18 +101,18 @@ class Bot(commands.Bot):
     #         traces_sample_rate=1.0,
     #     )
 
-    def runner(self):
+    def runner(self) -> None:
         try:
             asyncio.run(self._runner())
         except Exception as e:
             self.logger.critical(e)
             asyncio.run(self.shutdown(status=1))
 
-    async def _runner(self):
+    async def _runner(self) -> None:
         async with self:
             await self.start(os.environ["DISCORD_BOT_TOKEN"])
 
-    async def shutdown(self, status: int = 0):
+    async def shutdown(self, status: int = 0) -> None:
         import sys
 
         # from sentry_sdk import Hub

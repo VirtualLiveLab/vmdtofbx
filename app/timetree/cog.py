@@ -23,11 +23,11 @@ class TimeTree(commands.Cog):
         self.bot = bot
         self.send_today_event.start()
 
-    def cog_unload(self):
+    async def cog_unload(self) -> None:
         self.send_today_event.cancel()
 
     @tasks.loop(seconds=60)
-    async def send_today_event(self):
+    async def send_today_event(self) -> None:
         if not TimeUtils.get_now_jst().strftime("%H:%M") == "08:39":
             return
         embed = await self.get_timetree_embed()
@@ -35,15 +35,15 @@ class TimeTree(commands.Cog):
         await channel.send(embed=embed)
         return
 
-    @app_commands.guilds(int(os.environ["GUILD_ID"]))
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore
     @app_commands.command(name="timetree")
-    async def send_timetree(self, interaction: discord.Interaction):
+    async def send_timetree(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=False)
         embed = await self.get_timetree_embed()
         await interaction.followup.send(embed=embed)
         return
 
-    async def get_timetree_embed(self):
+    async def get_timetree_embed(self) -> discord.Embed:
         client = TimeTreeClient(
             api_key=os.getenv("API_KEY", ""),
             calendar_id=os.getenv("CALENDAR_ID", ""),
@@ -65,5 +65,5 @@ class TimeTree(commands.Cog):
             )
 
 
-async def setup(bot: "Bot"):
+async def setup(bot: "Bot") -> None:
     await bot.add_cog(TimeTree(bot))

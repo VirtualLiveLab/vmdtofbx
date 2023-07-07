@@ -7,7 +7,7 @@ def ready_embed(
     latency: float,
     failed_exts: list[str],
     failed_views: list[str],
-):
+) -> Embed:
     embed = Embed(
         description="ミクが起動したよ!",
         color=Color.MIKU,

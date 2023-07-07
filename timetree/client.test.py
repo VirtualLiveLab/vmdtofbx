@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from timetree.client import Client
 
 
-async def main():
+async def main() -> None:
     api_key = os.getenv("API_KEY", "")
     calendar_id = os.getenv("CALENDAR_ID", "")
     client = Client(api_key, calendar_id=calendar_id)
