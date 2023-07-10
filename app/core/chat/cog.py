@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class Chat(commands.Cog):
-    def __init__(self, bot: "Bot"):
+    def __init__(self, bot: "Bot") -> None:
         self.bot = bot
 
     @commands.Cog.listener("on_message")
@@ -36,14 +36,14 @@ class Chat(commands.Cog):
 
         return
 
-    @app_commands.command(name="miku", description="ミクさんが返事をしてくれるよ！")  # type: ignore
+    @app_commands.command(name="miku", description="ミクさんが返事をしてくれるよ！")
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def call_miku(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=False)
         await interaction.followup.send("MIKU!")
         return
 
-    @app_commands.command(name="helloworld", description="Hello World!")  # type: ignore
+    @app_commands.command(name="helloworld", description="Hello World!")
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def hello_world(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=False)

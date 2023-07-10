@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class Buhi(commands.Cog):
-    def __init__(self, bot: "Bot"):
+    def __init__(self, bot: "Bot") -> None:
         self.bot = bot
 
     group = app_commands.Group(
@@ -32,7 +32,7 @@ class Buhi(commands.Cog):
     #     await self.add_minou_role(member)
     #     return
 
-    @group.command(name="add", description="部費未納ロールを付与します")  # type: ignore
+    @group.command(name="add", description="部費未納ロールを付与します")
     @app_commands.guild_only()
     async def add_minou_role_command(self, interaction: discord.Interaction, member: discord.Member) -> None:
         await interaction.response.defer()
@@ -81,9 +81,9 @@ class Buhi(commands.Cog):
             await ui.sync()
         return
 
-    @group.command(name="remove", description="部費未納ロールを消去します")  # type: ignore
+    @group.command(name="remove", description="部費未納ロールを消去します")
     @app_commands.guild_only()
-    async def remove_minou_role_command(self, interaction: discord.Interaction, member: discord.Member):
+    async def remove_minou_role_command(self, interaction: discord.Interaction, member: discord.Member) -> None:
         await interaction.response.defer()
         author = validate(interaction.user, discord.Member)
 
