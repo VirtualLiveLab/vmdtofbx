@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from app import embed
 from const.log import command_log, login_log
-from utils.file import convert_to_cog, get_cwd, glob_files
+from utils.cog import CogLoader
 from utils.finder import Finder
 from utils.logger import getMyLogger
 
@@ -61,10 +61,8 @@ class Bot(commands.Bot):
     async def load_exts(self) -> None:
         # load cogs automatically
         # "cog.py" under the "app" directory will loaded
-        cwd = get_cwd()
-        cog_dir = cwd / "app"
-        abs_cog_path = glob_files(cog_dir, "cog.py")
-        cogs = [convert_to_cog(path.relative_to(cwd)) for path in abs_cog_path]
+        loader = CogLoader("app")
+        cogs = loader.glob_cog("cog.py", as_relative=True)
 
         if cogs is None or cogs == []:
             return
