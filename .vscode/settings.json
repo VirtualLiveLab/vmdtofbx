@@ -27,5 +27,8 @@
     "python.linting.lintOnSave": true,
     "mypy-type-checker.args": [
         "--config-file=pyproject.toml"
-    ]
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    }
 }
