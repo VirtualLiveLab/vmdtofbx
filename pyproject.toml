@@ -27,6 +27,13 @@ python-dotenv = "^0.21.1"
 pre-commit = "^3.1.0"
 # FIXME https://github.com/python-poetry/poetry-plugin-export/issues/176
 typing-extensions = ">=4.6.0,<4.7.0"
+ruff = "^0.0.282"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 125
+ignore = ["E203"]
+select = ["ALL"]
 
 [tool.black]
 target-version = ["py310"]
