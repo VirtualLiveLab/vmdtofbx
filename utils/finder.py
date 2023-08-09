@@ -1,39 +1,39 @@
 import os
-from typing import TypeVar, Union, overload
+from typing import TypeVar, overload
 
 import discord
 from discord import Thread
 from discord.abc import GuildChannel, PrivateChannel
 
 from .const import literal
-from .logger import getMyLogger
+from .logger import get_my_logger
 from .validator import validate
 
-T = TypeVar("T", bound=Union[GuildChannel, PrivateChannel, Thread])
+T = TypeVar("T", bound=GuildChannel | PrivateChannel | Thread)
 
 
 class Finder:
     def __init__(self, bot: discord.Client) -> None:
         self.bot = bot
-        self.logger = getMyLogger("Finder")
+        self.logger = get_my_logger("Finder")
 
     @overload
     async def find_channel(
         self,
         channel_id: int,
-        type: None = None,
+        expected_type: None = None,
     ) -> GuildChannel | PrivateChannel | Thread:
         ...
 
     @overload
-    async def find_channel(self, channel_id: int, type: type[T]) -> T:
+    async def find_channel(self, channel_id: int, expected_type: type[T]) -> T:
         ...
 
     async def find_channel(
         self,
         channel_id: int,
-        type: type[T] | None = None,
-    ):
+        expected_type: type[T] | None = None,
+    ) -> GuildChannel | PrivateChannel | Thread:
         channel = self.bot.get_channel(channel_id)
         if not channel:
             try:
@@ -42,10 +42,10 @@ class Finder:
                 self.logger.exception(literal.CHANNEL_NOT_FOUND, exc_info=e)
                 raise
 
-        if not type:
+        if not expected_type:
             return channel
 
-        return validate(channel, type)
+        return validate(channel, expected_type)
 
         # if isinstance(type, list):
         #     for t in type:
@@ -58,7 +58,7 @@ class Finder:
         # return channel
 
     async def find_log_channel(self) -> discord.TextChannel:
-        return await self.find_channel(int(os.environ["LOG_CHANNEL_ID"]), type=discord.TextChannel)
+        return await self.find_channel(int(os.environ["LOG_CHANNEL_ID"]), expected_type=discord.TextChannel)
 
     async def find_guild(self, guild_id: int) -> discord.Guild:
         guild = self.bot.get_guild(guild_id)
@@ -75,7 +75,7 @@ class Finder:
         role = guild.get_role(role_id)
         if not role:
             roles = await guild.fetch_roles()
-            role = [r for r in roles if r.id == role_id][0]
+            role = next(r for r in roles if r.id == role_id)
             if not role:
                 self.logger.exception(literal.CHANNEL_NOT_FOUND)
                 raise
@@ -106,14 +106,15 @@ class Finder:
             user = None
         return user
 
-    @staticmethod
-    def find_bot_permissions(
-        guild: discord.Guild,
-        place: discord.abc.GuildChannel | discord.Thread,
-    ) -> discord.Permissions:
-        role = guild.get_role(int(os.environ["BOT_ROLE"]))
-        if not role:
-            raise Exception("BOT_ROLE is not set")
+    # @staticmethod
+    # def find_bot_permissions(
+    #     guild: discord.Guild,
+    #     place: discord.abc.GuildChannel | discord.Thread,
+    # ) -> discord.Permissions:
+    #     role = guild.get_role(int(os.environ["BOT_ROLE"]))
+    #     if not role:
+    #         msg = "BOT_ROLE is not set"
+    #         raise Exception(msg)
 
-        perms: discord.Permissions = place.permissions_for(role)
-        return perms
+    #     perms: discord.Permissions = place.permissions_for(role)
+    #     return perms

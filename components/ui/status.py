@@ -9,7 +9,7 @@ from discord.types.embed import Embed as EmbedData
 
 from const.discord import MAX_EMBED_DESCRIPTION_LENGTH
 from const.enums import Status
-from utils.logger import getMyLogger
+from utils.logger import get_my_logger
 
 # TODO(@sushi-chaaaan): add loading emoji in VLL and switch to it  # noqa: FIX002
 # https://github.com/sushi-chaaaan/Mikubot-v2/issues/14
@@ -167,7 +167,7 @@ class StatusUI:
             timestamp=timestamp,
         ).to_dict()
         self.__message: discord.Message
-        self.__logger = getMyLogger(__name__)
+        self.__logger = get_my_logger(__name__)
 
     @property
     def embed_dict(self) -> EmbedData:

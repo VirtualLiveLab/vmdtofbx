@@ -10,7 +10,7 @@ from app import embed
 from const.log import command_log, login_log
 from utils.cog import CogLoader
 from utils.finder import Finder
-from utils.logger import getMyLogger
+from utils.logger import get_my_logger
 
 if not __debug__:
     from dotenv import load_dotenv
@@ -22,7 +22,7 @@ class Bot(commands.Bot):
     def __init__(self) -> None:
         # self.init_sentry()
         self.config = {"prefix": "!"}
-        self.logger = getMyLogger(__name__, level="DEBUG")
+        self.logger = get_my_logger(__name__, level="DEBUG")
 
         # failed extension list
         self.failed_exts: list[str] = []
