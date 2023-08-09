@@ -16,7 +16,7 @@ class ButtonStyle(_ButtonStyleRequired, total=False):
 
 
 class Button(ui.Button):
-    def __init__(self, label: str | None = None, /, *, style: ButtonStyle, custom_id: str | None = None):
+    def __init__(self, label: str | None = None, /, *, style: ButtonStyle, custom_id: str | None = None) -> None:
         __style = discord.ButtonStyle[style.get("color", "grey")]
         __disabled = style.get("disabled", False)
         __emoji = style.get("emoji", None)
@@ -35,7 +35,7 @@ class Button(ui.Button):
 
 
 class LinkButton(ui.Button):
-    def __init__(self, label: str | None = None, /, *, url: str, custom_id: str | None = None):
+    def __init__(self, label: str | None = None, /, *, url: str, custom_id: str | None = None) -> None:
         super().__init__(
             style=discord.ButtonStyle.link,
             url=url,

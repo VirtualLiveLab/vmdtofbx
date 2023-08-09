@@ -7,10 +7,12 @@ import discord
 from discord import Embed, Webhook
 from discord.types.embed import Embed as EmbedData
 
+from const.discord import MAX_EMBED_DESCRIPTION_LENGTH
 from const.enums import Status
 from utils.logger import getMyLogger
 
-# TODO: add loading emoji in VLL and switch to it
+# TODO(@sushi-chaaaan): add loading emoji in VLL and switch to it  # noqa: FIX002
+# https://github.com/sushi-chaaaan/Mikubot-v2/issues/14
 INITIALIZED_EMOJI = "\N{Hourglass with Flowing Sand}"
 LOADING_EMOJI = "<a:loading:1126058379756978186>"
 SUCCESSFUL_EMOJI = "\N{WHITE HEAVY CHECK MARK}"
@@ -140,7 +142,7 @@ class StatusUI:
         title: str | None = None,
         url: str | None = None,
         timestamp: datetime.datetime | None = None,
-    ):
+    ) -> None:
         """
         Initialize a status UI.
 
@@ -244,10 +246,10 @@ class StatusUI:
         `KeyError`:
             If the `key` already exists.
         """
-        if key in self.__contexts.keys():
-            raise KeyError(f"Context {key} already exists")
+        if key in self.__contexts:
+            msg = f"Context {key} already exists"
+            raise KeyError(msg)
         self.__contexts[key] = StatusContext(key=key, message=message, initial_status=status)
-        return
 
     def remove(self, *, key: str) -> None:
         """
@@ -263,10 +265,10 @@ class StatusUI:
         `KeyError`:
             If the `key` does not exist.
         """
-        if key not in self.__contexts.keys():
-            raise KeyError(f"Context {key} does not exist")
+        if key not in self.__contexts:
+            msg = f"Context {key} does not exist"
+            raise KeyError(msg)
         self.__contexts.pop(key)
-        return
 
     def update(self, *, key: str, status: Status | None = None, message: str | None = None) -> None:
         """
@@ -290,15 +292,16 @@ class StatusUI:
             If the `key` does not exist.
         """
         if status is None and message is None:
-            raise ValueError("At least one of status or message must be provided")
-        if key not in self.__contexts.keys():
-            raise KeyError(f"Context {key} does not exist")
+            msg = "At least one of status or message must be provided"
+            raise ValueError(msg)
+        if key not in self.__contexts:
+            msg = f"Context {key} does not exist"
+            raise KeyError(msg)
 
         if status is not None:
             self.__contexts[key].status = status
         if message is not None:
             self.__contexts[key].message = message
-        return
 
     @property
     def _embed(self) -> Embed:
@@ -320,8 +323,9 @@ class StatusUI:
         """
         current = self.embed_dict
         description = "\n".join(ctx.to_string() for ctx in self.__contexts.values())
-        if len(description) > 4096:
-            raise ValueError("Description is too long")
+        if len(description) > MAX_EMBED_DESCRIPTION_LENGTH:
+            msg = "Description is too long"
+            raise ValueError(msg)
         current["description"] = description
         return Embed.from_dict(current)
 
@@ -342,6 +346,7 @@ class StatusUI:
     async def send(
         self,
         target: discord.abc.Messageable | discord.Interaction | Webhook,
+        *,
         ephemeral: bool = False,
     ) -> None:
         """
@@ -363,7 +368,8 @@ class StatusUI:
         """
         if isinstance(target, discord.Interaction):
             if target.is_expired():
-                raise TimeoutError("Interaction is expired")
+                msg = "Interaction is expired"
+                raise TimeoutError(msg)
             if target.response.is_done():
                 self.__message = await target.followup.send(embed=self._embed, ephemeral=ephemeral, wait=True)
                 return
@@ -383,7 +389,8 @@ class StatusUI:
         try:
             await self.__message.edit(embed=self._embed)
         except Exception as e:
-            self.__logger.error(f"Failed to edit message: {e}")
+            msg = f"Failed to edit message: {e}"
+            self.__logger.exception(msg)
 
     def _dangerously_edit_embed(self, func: Callable[[Embed, T], Embed], *, kwargs: T) -> None:
         """
@@ -406,4 +413,3 @@ class StatusUI:
         """
         current = self._embed
         self._embed = func(current, kwargs)
-        return
