@@ -17,12 +17,12 @@ if TYPE_CHECKING:
 
 
 class TestCog(commands.Cog):
-    def __init__(self, bot: "Bot"):
+    def __init__(self, bot: "Bot") -> None:
         self.bot = bot
 
-    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore[arg-type]
     @app_commands.command(name="try-status", description="StatusUIのテストコマンド")
-    async def try_status(self, interaction: discord.Interaction):
+    async def try_status(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer()
 
         ui = StatusUI(color=Color.MIKU)

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class TimeTree(commands.Cog):
-    def __init__(self, bot: "Bot"):
+    def __init__(self, bot: "Bot") -> None:
         self.bot = bot
         self.send_today_event.start()
 
@@ -28,20 +28,19 @@ class TimeTree(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def send_today_event(self) -> None:
-        if not TimeUtils.get_now_jst().strftime("%H:%M") == "08:39":
+        if TimeUtils.get_now_jst().strftime("%H:%M") != "08:39":
             return
         embed = await self.get_timetree_embed()
         channel = await Finder(self.bot).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
         await channel.send(embed=embed)
         return
 
-    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore[arg-type]
     @app_commands.command(name="timetree")
     async def send_timetree(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=False)
         embed = await self.get_timetree_embed()
         await interaction.followup.send(embed=embed)
-        return
 
     async def get_timetree_embed(self) -> discord.Embed:
         client = TimeTreeClient(
@@ -50,8 +49,8 @@ class TimeTree(commands.Cog):
         )
         try:
             events = await client.get_upcoming_events()
-        except Exception as e:
-            self.bot.logger.error(e)
+        except Exception:
+            self.bot.logger.exception("TimeTreeからの情報取得に失敗しました")
             return discord.Embed(
                 title="TimeTreeからの情報取得に失敗しました",
                 description="時間をおいてもう一度お試しください",

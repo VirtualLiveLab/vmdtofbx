@@ -70,17 +70,20 @@ class Bot(commands.Bot):
         for cog in cogs:
             try:
                 await self.load_extension(cog)
-                self.logger.debug(f"Loaded {cog}")
-            except Exception as e:
-                self.logger.exception(f"Failed to load {cog}", exc_info=e)
+                msg = f"Loaded {cog}"
+                self.logger.debug(msg)
+            except Exception:
+                msg = f"Failed to load {cog}"
+                self.logger.exception(msg)
 
     async def sync_app_commands(self) -> None:
         try:
             synced = await self.tree.sync(guild=self.app_cmd_sync_target)
-        except Exception as e:
-            self.logger.exception("Failed to sync application commands", exc_info=e)
+        except Exception:
+            self.logger.exception("Failed to sync application commands")
         else:
-            self.logger.info(f"{len(synced)} Application commands synced successfully")
+            msg = f"{len(synced)} Application commands synced successfully"
+            self.logger.info(msg)
 
     async def setup_views(self) -> None:
         pass
@@ -102,13 +105,17 @@ class Bot(commands.Bot):
     def runner(self) -> None:
         try:
             asyncio.run(self._runner())
-        except Exception as e:
-            self.logger.critical(e)
+        except ValueError:
+            self.logger.exception("Failed to start bot")
             asyncio.run(self.shutdown(status=1))
 
     async def _runner(self) -> None:
-        async with self:
-            await self.start(os.environ["DISCORD_BOT_TOKEN"])
+        try:
+            async with self:
+                await self.start(os.environ["DISCORD_BOT_TOKEN"])
+        except TypeError:
+            self.logger.exception("Failed to start bot")
+            await self.shutdown()
 
     async def shutdown(self, status: int = 0) -> None:
         import sys

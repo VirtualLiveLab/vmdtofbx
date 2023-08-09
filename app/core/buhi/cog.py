@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     pass
 
 
+class RoleError(Exception):
+    pass
+
+
 class Buhi(commands.Cog):
     def __init__(self, bot: "Bot") -> None:
         self.bot = bot
@@ -26,13 +30,13 @@ class Buhi(commands.Cog):
         guild_ids=[int(os.environ["GUILD_ID"])],
     )
 
-    # TODO DiscordのOnboarding機能に移行しない場合コメントアウトを外す
+    # NOTICE: DiscordのOnboarding機能に移行しない場合コメントアウトを外す
     # @commands.Cog.listener("on_member_join")
     # async def add_minou_role_automatically(self, member: discord.Member):
     #     await self.add_minou_role(member)
     #     return
 
-    @group.command(name="add", description="部費未納ロールを付与します")
+    @group.command(name="add", description="部費未納ロールを付与します")  # type: ignore[arg-type]
     @app_commands.guild_only()
     async def add_minou_role_command(self, interaction: discord.Interaction, member: discord.Member) -> None:
         await interaction.response.defer()
@@ -59,14 +63,14 @@ class Buhi(commands.Cog):
         try:
             await self.add_minou_role(member)
         except Exception as e:
-            self.bot.logger.error(e)
+            self.bot.logger.exception("部費未納ロールの付与に失敗しました。")
             ui.update(
                 key="ROLE_STATUS",
                 status=Status.FAILED,
                 message=f"{member.mention}に部費未納ロールを付与できませんでした。",
             )
             ui.color = Color.WARNING
-            ui._dangerously_edit_embed(
+            ui._dangerously_edit_embed(  # noqa: SLF001
                 lambda em, d: em.add_field(name="エラー内容", value=f"```\n{d['error']}\n```"),
                 kwargs={"error": e},
             )
@@ -81,7 +85,7 @@ class Buhi(commands.Cog):
             await ui.sync()
         return
 
-    @group.command(name="remove", description="部費未納ロールを消去します")
+    @group.command(name="remove", description="部費未納ロールを消去します")  # type: ignore[arg-type]
     @app_commands.guild_only()
     async def remove_minou_role_command(self, interaction: discord.Interaction, member: discord.Member) -> None:
         await interaction.response.defer()
@@ -94,20 +98,24 @@ class Buhi(commands.Cog):
             await ui.send(interaction.followup)
             return
 
-        ui.add(key="ROLE_STATUS", status=Status.IN_PROGRESS, message=f"{member.mention}から部費未納ロールを消去しています...")
+        ui.add(
+            key="ROLE_STATUS",
+            status=Status.IN_PROGRESS,
+            message=f"{member.mention}から部費未納ロールを消去しています...",
+        )
         await ui.send(interaction.followup)
 
         try:
             await self.remove_minou_role(member)
         except Exception as e:
-            self.bot.logger.error(e)
+            self.bot.logger.exception("部費未納ロールの消去に失敗しました。")
             ui.update(
                 key="ROLE_STATUS",
                 status=Status.FAILED,
                 message=f"{member.mention}から部費未納ロールを消去できませんでした。",
             )
             ui.color = Color.WARNING
-            ui._dangerously_edit_embed(
+            ui._dangerously_edit_embed(  # noqa: SLF001
                 lambda em, d: em.add_field(name="エラー内容", value=f"```\n{d['error']}\n```"),
                 kwargs={"error": e},
             )
@@ -124,15 +132,15 @@ class Buhi(commands.Cog):
 
     async def add_minou_role(self, member: discord.Member) -> None:
         if Role.BUHI_MINOU in [r.id for r in member.roles]:
-            raise Exception(f"{member.mention}には既に部費未納ロールが付与されています。")
+            msg = f"{member.mention}には既に部費未納ロールが付与されています。"
+            raise RoleError(msg)
         await member.add_roles(discord.Object(id=Role.BUHI_MINOU))
-        return
 
     async def remove_minou_role(self, member: discord.Member) -> None:
         if Role.BUHI_MINOU not in [r.id for r in member.roles]:
-            raise Exception(f"{member.mention}には部費未納ロールが付与されていません。")
+            msg = f"{member.mention}には部費未納ロールが付与されていません。"
+            raise RoleError(msg)
         await member.remove_roles(discord.Object(id=Role.BUHI_MINOU))
-        return
 
     def check_kaikei_role(self, member: discord.Member) -> bool:
         return Role.KAIKEI in [r.id for r in member.roles]

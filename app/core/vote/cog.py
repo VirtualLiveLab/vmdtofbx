@@ -1,5 +1,5 @@
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import discord
 from discord import app_commands
@@ -16,15 +16,18 @@ if TYPE_CHECKING:
 
 
 class Vote(commands.Cog):
-    __renamed_options = {f"option{i}": f"選択肢{i}" for i in range(1, 21)}
+    __renamed_options: ClassVar[dict[str, str]] = {f"option{i}": f"選択肢{i}" for i in range(1, 21)}
 
-    def __init__(self, bot: "Bot"):
+    def __init__(self, bot: "Bot") -> None:
         self.bot = bot
 
-    @app_commands.command(name="vote", description="最大20択で投票を作成するよ！選択肢をすべて省略するとはい/いいえの投票になるよ！")
+    @app_commands.command(  # type: ignore[arg-type]
+        name="vote",
+        description="最大20択で投票を作成するよ！選択肢をすべて省略するとはい/いいえの投票になるよ！",
+    )
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     @app_commands.rename(**(__renamed_options | {"question": "質問文"}))
-    async def vote(
+    async def vote(  # noqa: PLR0913
         self,
         interaction: discord.Interaction,
         question: str,
@@ -48,7 +51,7 @@ class Vote(commands.Cog):
         option18: str | None = None,
         option19: str | None = None,
         option20: str | None = None,
-    ):
+    ) -> None:
         await interaction.response.defer(ephemeral=False)
         if interaction.channel is None:
             return
@@ -103,5 +106,5 @@ class Vote(commands.Cog):
         return
 
 
-async def setup(bot: "Bot"):
+async def setup(bot: "Bot") -> None:
     await bot.add_cog(Vote(bot))

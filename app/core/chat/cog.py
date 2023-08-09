@@ -25,7 +25,7 @@ class Chat(commands.Cog):
 
         if (con := message.content) == "miku":
             await message.channel.send("MIKU!")
-        elif "ミクさん！" == con:
+        elif con == "ミクさん！":
             await message.channel.send("呼んだ？")
         elif "うおうお" in con:
             await message.add_reaction("\N{FISH}")
@@ -36,20 +36,18 @@ class Chat(commands.Cog):
 
         return
 
-    @app_commands.command(name="miku", description="ミクさんが返事をしてくれるよ！")
+    @app_commands.command(name="miku", description="ミクさんが返事をしてくれるよ！")  # type: ignore[arg-type]
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def call_miku(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=False)
         await interaction.followup.send("MIKU!")
-        return
 
-    @app_commands.command(name="helloworld", description="Hello World!")
+    @app_commands.command(name="helloworld", description="Hello World!")  # type: ignore[arg-type]
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
     async def hello_world(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=False)
         emb = embed.user_embed(interaction.user)
         await interaction.followup.send(embed=emb)
-        return
 
 
 async def setup(bot: "Bot") -> None:
