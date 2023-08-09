@@ -5,7 +5,7 @@ import aiohttp
 
 from timetree.object.event import Event
 
-calenderID = "yJojmgmD7kt9"  # 2023
+calender_2023_id = "yJojmgmD7kt9"  # 2023
 
 
 class Client:
@@ -17,33 +17,32 @@ class Client:
     async def get_upcoming_events(self, days: Literal[1, 2, 3, 4, 5, 6, 7] = 1) -> list[Event]:
         # https://developers.timetreeapp.com/ja/docs/api/oauth-app#list-upcoming-events
         upcoming_url = (
-            f"https://timetreeapis.com/calendars/{self.calendar_id}/upcoming_events?days={str(days)}&timezone=Asia/Tokyo"
+            f"https://timetreeapis.com/calendars/{self.calendar_id}/upcoming_events?days={days!s}&timezone=Asia/Tokyo"
         )
         headers = {
             "Accept": "application/vnd.timetree.v1+json",
             "Authorization": f"Bearer {self.api_key}",
         }
-        async with aiohttp.ClientSession() as session:
-            async with session.get(upcoming_url, headers=headers) as res:
-                data = await res.json(encoding="utf-8")
-                self.logger.debug(res.status)
-                self.logger.debug(data)
+        async with aiohttp.ClientSession() as session, session.get(upcoming_url, headers=headers) as res:
+            data = await res.json(encoding="utf-8")
+            self.logger.debug(res.status)
+            self.logger.debug(data)
 
-                try:
-                    events = [
-                        Event(
-                            id=elm["id"],
-                            type=elm["type"],
-                            **elm["attributes"],
-                            raw_data=elm,
-                        )
-                        for elm in data["data"]
-                    ]
-                except Exception as e:
-                    self.logger.error(e)
-                    return []
-                else:
-                    return events
+            try:
+                events = [
+                    Event(
+                        event_id=elm["id"],
+                        event_type=elm["type"],
+                        **elm["attributes"],
+                        raw_data=elm,
+                    )
+                    for elm in data["data"]
+                ]
+            except Exception:
+                self.logger.exception("Error occurred while parsing json")
+                return []
+            else:
+                return events
 
 
 # def getTodaysEventsJson(title):

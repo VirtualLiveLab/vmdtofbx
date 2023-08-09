@@ -5,8 +5,8 @@ from pydantic import BaseModel, HttpUrl
 
 
 class Event(BaseModel):
-    id: str
-    type: Literal["event"]
+    event_id: str
+    event_type: Literal["event"]
 
     # attributes
     category: Literal["schedule", "keep"]
