@@ -31,7 +31,7 @@ class TimeTree(commands.Cog):
         if TimeUtils.get_now_jst().strftime("%H:%M") != "08:39":
             return
         embed = await self.get_timetree_embed()
-        channel = await Finder(self.bot).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
+        channel = await Finder(self.bot).find_channel(int(os.environ["CHANNEL_ID"]), expected_type=discord.TextChannel)
         await channel.send(embed=embed)
         return
 

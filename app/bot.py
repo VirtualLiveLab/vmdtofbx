@@ -49,7 +49,7 @@ class Bot(commands.Bot):
 
     async def on_ready(self) -> None:
         self.logger.info(login_log(user=self.user, guild_amount=len(self.guilds)))
-        channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), type=discord.TextChannel)
+        channel = await Finder(self).find_channel(int(os.environ["CHANNEL_ID"]), expected_type=discord.TextChannel)
         emb = embed.ready_embed(
             latency=self.latency,
             failed_exts=self.failed_exts,
