@@ -58,6 +58,9 @@ def deprecate_on(date: str | datetime, format: str = "%Y-%m-%d") -> Callable[[Ca
     date : `str` | `datetime` | `None`
         date to deprecate, by default None.
 
+    format : `str`, optional
+        format of date. used when date is `str`, by default `"%Y-%m-%d"`.
+
     Returns
     -------
     `Callable[[Callable[P, R]], Callable[P, R]]`
@@ -73,6 +76,9 @@ def deprecate_on(date: str | datetime, format: str = "%Y-%m-%d") -> Callable[[Ca
             if is_deprecated:
                 msg = f"Deprecated since {date}. This function will be removed in the future."
                 warnings.warn(msg, DeprecationWarning, stacklevel=2)
+            else:
+                msg = f"This function will be deprecated on {date}."
+                warnings.warn(msg, FutureWarning, stacklevel=2)
             return func(*args, **kwargs)
 
         return wrapper
