@@ -1,3 +1,5 @@
+# TODO(@sushi-chaaaan): try to use `typing.deprecated(PEP702)` when python 3.12 is released.  # noqa: FIX002
+# https://github.com/sushi-chaaaan/Mikubot-v2/issues/17
 import warnings
 from collections.abc import Callable
 from datetime import datetime
