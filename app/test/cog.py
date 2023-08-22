@@ -6,7 +6,11 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+from components.ui.common.button import Button
+from components.ui.send import ViewSender
+from components.ui.state import State
 from components.ui.status import StatusUI
+from components.ui.view import View, ViewObject
 from const.enums import Color, Status
 
 if TYPE_CHECKING:
@@ -48,6 +52,36 @@ class TestCog(commands.Cog):
         await asyncio.sleep(5)
         ui.update(key="STATUS_2", status=Status.FAILED, message="ステータス2でエラーが発生")
         await ui.sync()
+
+    @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore[arg-type]
+    @app_commands.command(name="try-state", description="Stateのテストコマンド")
+    async def try_state(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer()
+        v = TestView()
+        vv = ViewSender(v)
+        await vv.send(target=interaction.followup, ephemeral=False)
+
+
+class TestView(View):
+    def __init__(self) -> None:
+        self.count = State(0, self)
+        super().__init__()
+
+    def export(self) -> ViewObject:
+        async def on_click(interaction: discord.Interaction) -> None:
+            await interaction.response.defer()
+            self.increment()
+            await interaction.followup.send("Incremented")
+
+        view = discord.ui.View(timeout=None)
+        view.add_item(
+            Button("+1", style={"color": "green"}, on_click=on_click),
+        )
+
+        return ViewObject(content=f"Count: {self.count.get_state()}", view=view)
+
+    def increment(self) -> None:
+        self.count.set_state(lambda x: x + 1)
 
 
 async def setup(bot: "Bot") -> None:
