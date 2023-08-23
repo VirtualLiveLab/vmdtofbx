@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from components.ui.common.button import Button
 from components.ui.send import ViewSender
-from components.ui.state import State
+from components.ui.state import use_state
 from components.ui.status import StatusUI
 from components.ui.view import View, ViewObject
 from const.enums import Color, Status
@@ -57,31 +57,42 @@ class TestCog(commands.Cog):
     @app_commands.command(name="try-state", description="Stateのテストコマンド")
     async def try_state(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer()
-        v = TestView()
-        vv = ViewSender(v)
-        await vv.send(target=interaction.followup, ephemeral=False)
+        view = ViewSender(TestView())
+        await view.send(target=interaction.followup, ephemeral=False)
 
 
 class TestView(View):
     def __init__(self) -> None:
-        self.count = State(0, self)
+        self.count, self.set_count = use_state(0, self)
         super().__init__()
 
+    def increment(self) -> None:
+        self.set_count(lambda x: x + 1)
+
+    def decrement(self) -> None:
+        self.set_count(lambda x: x - 1)
+
     def export(self) -> ViewObject:
-        async def on_click(interaction: discord.Interaction) -> None:
+        async def callback_increment(interaction: discord.Interaction) -> None:
             await interaction.response.defer()
             self.increment()
-            await interaction.followup.send("Incremented")
 
-        view = discord.ui.View(timeout=None)
-        view.add_item(
-            Button("+1", style={"color": "green"}, on_click=on_click),
+        async def callback_decrement(interaction: discord.Interaction) -> None:
+            await interaction.response.defer()
+            self.decrement()
+
+        return ViewObject(
+            embeds=[
+                discord.Embed(
+                    title="Count",
+                    description=f"Count: {self.count()}",
+                ),
+            ],
+            children=[
+                Button("+1", style={"color": "green"}, on_click=callback_increment),
+                Button("-1", style={"color": "red"}, on_click=callback_decrement),
+            ],
         )
-
-        return ViewObject(content=f"Count: {self.count.get_state()}", view=view)
-
-    def increment(self) -> None:
-        self.count.set_state(lambda x: x + 1)
 
 
 async def setup(bot: "Bot") -> None:
