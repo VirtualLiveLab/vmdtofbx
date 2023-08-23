@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, ClassVar
 import discord
 from discord import app_commands
 from discord.ext import commands
+from pydantic import BaseModel, Field
 
 from const.enums import Color
 from utils.io import read_json
@@ -13,6 +14,13 @@ if TYPE_CHECKING:
     from app.bot import Bot
 
     pass
+
+
+class VoteOption(BaseModel):
+    name: str
+    emoji: str
+    value: str
+    current: int = Field(default=0, ge=0)
 
 
 class Vote(commands.Cog):
@@ -86,11 +94,13 @@ class Vote(commands.Cog):
         emoji_dict = read_json(r"const/vote_emoji.json")
         if valid_opts == []:
             option = [
-                {"name": emoji_dict["0"], "value": "はい"},
-                {"name": emoji_dict["1"], "value": "いいえ"},
+                VoteOption(name="1", emoji=emoji_dict["0"], value="はい"),
+                VoteOption(name="2", emoji=emoji_dict["1"], value="いいえ"),
             ]
         else:
-            option = [{"name": emoji_dict[str(i)], "value": valid_opts[i]} for i in range(len(valid_opts))]
+            option = [
+                VoteOption(name=str(i + 1), emoji=emoji_dict[str(i)], value=valid_opts[i]) for i in range(len(valid_opts))
+            ]
 
         embed = discord.Embed(
             color=Color.MIKU,
@@ -98,10 +108,10 @@ class Vote(commands.Cog):
         )
         embed.set_author(name="投票")
         for opt in option:
-            embed.add_field(**opt)
+            embed.add_field(name=opt.emoji, value=opt.value)
 
         msg = await interaction.followup.send(embed=embed, wait=True)
-        for e in [d["name"] for d in option]:
+        for e in [d.emoji for d in option]:
             await msg.add_reaction(e)
         return
 
