@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from components.ui.common.button import Button
 from components.ui.send import ViewSender
-from components.ui.state import use_state
+from components.ui.state import State
 from components.ui.status import StatusUI
 from components.ui.view import View, ViewObject
 from const.enums import Color, Status
@@ -63,14 +63,17 @@ class TestCog(commands.Cog):
 
 class TestView(View):
     def __init__(self) -> None:
-        self.count, self.set_count = use_state(0, self)
+        self.count = State(0, self)
         super().__init__()
 
     def increment(self) -> None:
-        self.set_count(lambda x: x + 1)
+        self.count.set_state(lambda x: x + 1)
 
     def decrement(self) -> None:
-        self.set_count(lambda x: x - 1)
+        self.count.set_state(lambda x: x - 1)
+
+    def reset(self) -> None:
+        self.count.set_state(0)
 
     def export(self) -> ViewObject:
         async def callback_increment(interaction: discord.Interaction) -> None:
@@ -81,16 +84,30 @@ class TestView(View):
             await interaction.response.defer()
             self.decrement()
 
+        async def callback_reset(interaction: discord.Interaction) -> None:
+            await interaction.response.defer()
+            self.reset()
+
         return ViewObject(
             embeds=[
                 discord.Embed(
                     title="Count",
-                    description=f"Count: {self.count()}",
+                    description=f"Count: {self.count.get_state()}",
                 ),
             ],
             children=[
                 Button("+1", style={"color": "green"}, on_click=callback_increment),
                 Button("-1", style={"color": "red"}, on_click=callback_decrement),
+                Button(
+                    "Reset",
+                    style={
+                        "color": "blurple",
+                        "emoji": "🔄",
+                        "row": 1,
+                        "disabled": self.count.get_state() == 0,
+                    },
+                    on_click=callback_reset,
+                ),
             ],
         )
 
