@@ -18,12 +18,12 @@ class State(Generic[T]):
         self._logger = get_my_logger(self.__class__.__name__)
 
     def __call__(self) -> T:
-        return self._get_state()
+        return self.get_state()
 
-    def _get_state(self) -> T:
+    def get_state(self) -> T:
         return self._current_value
 
-    def _set_state(self, new_value: T | Callable[[T], T]) -> None:
+    def set_state(self, new_value: T | Callable[[T], T]) -> None:
         _new_value: T = self._current_value
 
         if isinstance(new_value, Callable):
@@ -62,4 +62,4 @@ def use_state(
     loop: asyncio.AbstractEventLoop | None = None,
 ) -> UseStateTuple[T]:
     s = State[T](initial_value, view, loop=loop)
-    return UseStateTuple(state=s, set_state=s._set_state)  # noqa: SLF001
+    return UseStateTuple(state=s, set_state=s.set_state)
