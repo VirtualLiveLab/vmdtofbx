@@ -66,27 +66,18 @@ class TestView(View):
         self.count = State(0, self)
         super().__init__()
 
-    def increment(self) -> None:
-        self.count.set_state(lambda x: x + 1)
-
-    def decrement(self) -> None:
-        self.count.set_state(lambda x: x - 1)
-
-    def reset(self) -> None:
-        self.count.set_state(0)
-
     def export(self) -> ViewObject:
-        async def callback_increment(interaction: discord.Interaction) -> None:
+        async def increment(interaction: discord.Interaction) -> None:
             await interaction.response.defer()
-            self.increment()
+            self.count.set_state(lambda x: x + 1)
 
-        async def callback_decrement(interaction: discord.Interaction) -> None:
+        async def decrement(interaction: discord.Interaction) -> None:
             await interaction.response.defer()
-            self.decrement()
+            self.count.set_state(lambda x: x - 1)
 
-        async def callback_reset(interaction: discord.Interaction) -> None:
+        async def reset(interaction: discord.Interaction) -> None:
             await interaction.response.defer()
-            self.reset()
+            self.count.set_state(0)
 
         return ViewObject(
             embeds=[
@@ -96,8 +87,8 @@ class TestView(View):
                 ),
             ],
             children=[
-                Button("+1", style={"color": "green"}, on_click=callback_increment),
-                Button("-1", style={"color": "red"}, on_click=callback_decrement),
+                Button("+1", style={"color": "green"}, on_click=increment),
+                Button("-1", style={"color": "red"}, on_click=decrement),
                 Button(
                     "Reset",
                     style={
@@ -106,7 +97,7 @@ class TestView(View):
                         "row": 1,
                         "disabled": self.count.get_state() == 0,
                     },
-                    on_click=callback_reset,
+                    on_click=reset,
                 ),
             ],
         )

@@ -12,6 +12,7 @@ class ViewSender:
         view: View,
     ) -> None:
         self.__view = view
+        self.__view._sender = self  # noqa: SLF001
         self.__message: discord.Message
         self.__logger = get_my_logger(__name__)
 
@@ -50,7 +51,6 @@ class ViewSender:
         """
         t = target
         view_dict = self._get_view_dict(timeout)
-        self.__view._sender = self  # noqa: SLF001
         if isinstance(t, discord.Interaction):
             if t.is_expired():
                 msg = "Interaction is expired"
