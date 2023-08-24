@@ -7,6 +7,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from components.ui.common.button import Button
+from components.ui.common.select import Select, SelectOption, SelectOptions
 from components.ui.send import ViewSender
 from components.ui.state import State
 from components.ui.status import StatusUI
@@ -64,6 +65,7 @@ class TestCog(commands.Cog):
 class TestView(View):
     def __init__(self) -> None:
         self.count = State(0, self)
+        self.selected: State[list[str]] = State([], self)
         super().__init__()
 
     def export(self) -> ViewObject:
@@ -79,13 +81,18 @@ class TestView(View):
             await interaction.response.defer()
             self.count.set_state(0)
 
+        async def on_select(interaction: discord.Interaction, values: list[str]) -> None:
+            await interaction.response.defer()
+            self.selected.set_state(values)
+
+        e = discord.Embed(
+            title="Count",
+            description=f"Count: {self.count.get_state()}",
+        )
+        e.add_field(name="Selected", value="\n".join(self.selected.get_state()))
+
         return ViewObject(
-            embeds=[
-                discord.Embed(
-                    title="Count",
-                    description=f"Count: {self.count.get_state()}",
-                ),
-            ],
+            embeds=[e],
             children=[
                 Button("+1", style={"color": "green"}, on_click=increment),
                 Button("-1", style={"color": "red"}, on_click=decrement),
@@ -94,10 +101,23 @@ class TestView(View):
                     style={
                         "color": "blurple",
                         "emoji": "🔄",
-                        "row": 1,
                         "disabled": self.count.get_state() == 0,
                     },
                     on_click=reset,
+                ),
+                Select(
+                    options=SelectOptions(
+                        max_values=2,
+                        options=[
+                            SelectOption(label="A", description="Aです"),
+                            SelectOption(label="B", description="Bです"),
+                        ],
+                    ),
+                    style={
+                        "placeholder": "Select",
+                        "row": 2,
+                    },
+                    on_select=on_select,
                 ),
             ],
         )
