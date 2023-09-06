@@ -6,6 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 from pydantic import BaseModel, Field
 
+from const.discord import VOTE_FOOTER_MESSAGE
 from const.enums import Color
 from utils.io import read_json
 
@@ -17,9 +18,8 @@ if TYPE_CHECKING:
 
 
 class VoteOption(BaseModel):
-    name: str
+    label: str
     emoji: str
-    value: str
     current: int = Field(default=0, ge=0)
 
 
@@ -28,6 +28,12 @@ class Vote(commands.Cog):
 
     def __init__(self, bot: "Bot") -> None:
         self.bot = bot
+        self.vote_count_ctx_menu = app_commands.ContextMenu(
+            name="投票を集計",
+            callback=self.vote_count_callback,
+            guild_ids=[int(os.environ["GUILD_ID"])],
+        )
+        self.bot.tree.add_command(self.vote_count_ctx_menu)
 
     @app_commands.command(  # type: ignore[arg-type]
         name="vote",
@@ -94,26 +100,74 @@ class Vote(commands.Cog):
         emoji_dict = read_json(r"const/vote_emoji.json")
         if valid_opts == []:
             option = [
-                VoteOption(name="1", emoji=emoji_dict["0"], value="はい"),
-                VoteOption(name="2", emoji=emoji_dict["1"], value="いいえ"),
+                VoteOption(emoji=emoji_dict["0"], label="はい"),
+                VoteOption(emoji=emoji_dict["1"], label="いいえ"),
             ]
         else:
-            option = [
-                VoteOption(name=str(i + 1), emoji=emoji_dict[str(i)], value=valid_opts[i]) for i in range(len(valid_opts))
-            ]
+            option = [VoteOption(emoji=emoji_dict[str(i)], label=valid_opts[i]) for i in range(len(valid_opts))]
 
         embed = discord.Embed(
             color=Color.MIKU,
             title=question,
         )
         embed.set_author(name="投票")
+        embed.set_footer(text=VOTE_FOOTER_MESSAGE)
         for opt in option:
-            embed.add_field(name=opt.emoji, value=opt.value)
+            embed.add_field(name=opt.emoji, value=opt.label)
 
         msg = await interaction.followup.send(embed=embed, wait=True)
         for e in [d.emoji for d in option]:
             await msg.add_reaction(e)
         return
+
+    async def vote_count_callback(self, interaction: discord.Interaction, message: discord.Message) -> None:
+        await interaction.response.defer(ephemeral=False)
+
+        if not self.is_vote_message(message.embeds):
+            await interaction.followup.send("投票メッセージではありません。", ephemeral=False)
+            return
+
+        vote_title = message.embeds[0].title or "NULL"
+
+        options = self.process_vote_message(message)
+        sorted_options = sorted(options, key=lambda x: x.current, reverse=True)
+
+        result_message = "\n".join([f"{opt.label}:{opt.current}票" for opt in sorted_options])
+
+        embed = discord.Embed(
+            color=Color.MIKU,
+            title=f"{vote_title}の投票結果",
+            description=result_message,
+        )
+        await interaction.followup.send(embed=embed, ephemeral=False)
+        return
+
+    def is_vote_message(self, embeds: list[discord.Embed]) -> bool:
+        if embeds is None or embeds == []:
+            return False
+
+        em = embeds[0]
+        if em.footer.text is None or em.footer.text != VOTE_FOOTER_MESSAGE:
+            return False
+
+        return True
+
+    def process_vote_message(self, message: discord.Message) -> list[VoteOption]:
+        em = message.embeds[0]
+
+        return [
+            VoteOption(
+                label=f.value,
+                emoji=f.name,
+                current=self.get_reaction_count(message.reactions, f.name),
+            )
+            for f in em.fields
+            if f.value is not None and f.name is not None
+        ]
+
+    def get_reaction_count(self, reactions: list[discord.Reaction], emoji: str) -> int:
+        r = [r for r in reactions if r.emoji == emoji]
+        return r[0].count - 1 if r != [] else 0
 
 
 async def setup(bot: "Bot") -> None:
