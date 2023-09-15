@@ -45,6 +45,9 @@ ignore = [
 select = ["ALL"]
 
 [tool.ruff.per-file-ignores]
+"./app/**" = [
+    "INP001", # add __init__.py to app directory is too much work
+]
 "/**/tests/**" = [
     "INP001", # add __init__.py to tests directory is too much work
     "S101",   # allow to use assert in tests
