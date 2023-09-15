@@ -23,18 +23,19 @@ class Chat(commands.Cog):
         if message.author.bot:
             return
 
-        if (con := message.content) == "miku":
-            await message.channel.send("MIKU!")
-        elif con == "ミクさん！":
-            await message.channel.send("呼んだ？")
-        elif "うおうお" in con:
-            await message.add_reaction("\N{FISH}")
-        elif "ふろ" in con:
-            await message.add_reaction("\N{bathtub}")
-        elif "Docker" in con:
-            await message.add_reaction("\N{whale}")
-
-        return
+        match message.content:
+            case "miku":
+                await message.channel.send("MIKU!")
+            case "ミクさん！":
+                await message.channel.send("呼んだ？")
+            case "うおうお":
+                await message.add_reaction("\N{FISH}")
+            case "ふろ":
+                await message.add_reaction("\N{bathtub}")
+            case "Docker":
+                await message.add_reaction("\N{whale}")
+            case _:
+                pass
 
     @app_commands.command(name="miku", description="ミクさんが返事をしてくれるよ！")  # type: ignore[arg-type]
     @app_commands.guilds(int(os.environ["GUILD_ID"]))
