@@ -25,7 +25,6 @@ pre-commit = "^3.1.0"
 # FIXME https://github.com/python-poetry/poetry-plugin-export/issues/176
 typing-extensions = ">=4.6.0,<4.7.0"
 ruff = "^0.0.282"
-pytest = "^7.4.0"
 
 [tool.ruff]
 # https://qiita.com/yuji38kwmt/items/63e82126076204923520
@@ -81,9 +80,6 @@ _black = "poetry run black ."
 
 # export
 export = "poetry export -f requirements.txt -o requirements.txt --only main --without-hashes"
-
-# test
-test = "poetry run pytest tests/"
 
 [build-system]
 requires = ["poetry-core"]
