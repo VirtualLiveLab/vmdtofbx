@@ -29,7 +29,7 @@ class Vote(commands.Cog):
     def __init__(self, bot: "Bot") -> None:
         self.bot = bot
         self.vote_count_ctx_menu = app_commands.ContextMenu(
-            name="投票を集計",
+            name="投票を集計する",
             callback=self.vote_count_callback,
             guild_ids=[int(os.environ["GUILD_ID"])],
         )
@@ -129,16 +129,16 @@ class Vote(commands.Cog):
 
         vote_title = message.embeds[0].title or "NULL"
 
-        options = self.process_vote_message(message)
-        sorted_options = sorted(options, key=lambda x: x.current, reverse=True)
-
-        result_message = "\n".join([f"{opt.label}:{opt.current}票" for opt in sorted_options])
+        result = self.process_vote_message(message)
+        sorted_result = sorted(result, key=lambda x: x.current, reverse=True)
 
         embed = discord.Embed(
             color=Color.MIKU,
             title=f"{vote_title}の投票結果",
-            description=result_message,
         )
+        for i, opt in enumerate(sorted_result):
+            embed.add_field(name=f"{i + 1}位: {opt.label}", value=f"**{opt.current}票**", inline=False)
+
         await interaction.followup.send(embed=embed, ephemeral=False)
         return
 
