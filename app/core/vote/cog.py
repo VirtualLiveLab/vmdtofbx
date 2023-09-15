@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, ClassVar
 import discord
 from discord import app_commands
 from discord.ext import commands
-from pydantic import BaseModel, Field
 
+from app.core.vote.embed import vote_embed, vote_result_embed
+from app.core.vote.type import VoteOption
 from const.discord import VOTE_FOOTER_MESSAGE
-from const.enums import Color
 from utils.io import read_json
 
 if TYPE_CHECKING:
@@ -15,12 +15,6 @@ if TYPE_CHECKING:
     from app.bot import Bot
 
     pass
-
-
-class VoteOption(BaseModel):
-    label: str
-    emoji: str
-    current: int = Field(default=0, ge=0)
 
 
 class Vote(commands.Cog):
@@ -106,15 +100,7 @@ class Vote(commands.Cog):
         else:
             option = [VoteOption(emoji=emoji_dict[str(i)], label=valid_opts[i]) for i in range(len(valid_opts))]
 
-        embed = discord.Embed(
-            color=Color.MIKU,
-            title=question,
-        )
-        embed.set_author(name="投票")
-        embed.set_footer(text=VOTE_FOOTER_MESSAGE)
-        for opt in option:
-            embed.add_field(name=opt.emoji, value=opt.label)
-
+        embed = vote_embed(question, option)
         msg = await interaction.followup.send(embed=embed, wait=True)
         for e in [d.emoji for d in option]:
             await msg.add_reaction(e)
@@ -132,13 +118,7 @@ class Vote(commands.Cog):
         result = self.process_vote_message(message)
         sorted_result = sorted(result, key=lambda x: x.current, reverse=True)
 
-        embed = discord.Embed(
-            color=Color.MIKU,
-            title=f"{vote_title}の投票結果",
-        )
-        for i, opt in enumerate(sorted_result):
-            embed.add_field(name=f"{i + 1}位: {opt.label}", value=f"**{opt.current}票**", inline=False)
-
+        embed = vote_result_embed(vote_title, sorted_result)
         await interaction.followup.send(embed=embed, ephemeral=False)
         return
 
