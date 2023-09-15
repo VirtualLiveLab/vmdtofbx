@@ -5,7 +5,8 @@ import discord
 from discord import Thread
 from discord.abc import GuildChannel, PrivateChannel
 
-from .const import literal
+from const import literal
+
 from .logger import get_my_logger
 from .validator import validate
 
