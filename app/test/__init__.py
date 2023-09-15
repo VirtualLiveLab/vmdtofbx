@@ -1,3 +1,3 @@
-from . import cog
+from . import _cog
 
-__all__ = ["cog"]
+__all__ = ["_cog"]
