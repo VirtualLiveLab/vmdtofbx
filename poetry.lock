@@ -526,6 +526,24 @@ reference = "master"
 resolved_reference = "e67d00502d91c15914c640e1aae40e15544cdfa1"
 
 [[package]]
+name = "dispander"
+version = "0.5.0"
+description = "Discord Message URL Expander"
+optional = false
+python-versions = "*"
+files = []
+develop = false
+
+[package.dependencies]
+"discord.py" = ">=1.3.3"
+
+[package.source]
+type = "git"
+url = "https://github.com/sushi-chaaaan/dispander.git"
+reference = "custom-embed"
+resolved_reference = "52d39193bc3148f71165218896be7bf649afdc53"
+
+[[package]]
 name = "distlib"
 version = "0.3.7"
 description = "Distribution utilities"
@@ -624,13 +642,13 @@ files = [
 
 [[package]]
 name = "identify"
-version = "2.5.28"
+version = "2.5.29"
 description = "File identification library for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "identify-2.5.28-py2.py3-none-any.whl", hash = "sha256:87816de144bf46d161bd5b3e8f5596b16cade3b80be537087334b26bc5c177f3"},
-    {file = "identify-2.5.28.tar.gz", hash = "sha256:94bb59643083ebd60dc996d043497479ee554381fbc5307763915cda49b0e78f"},
+    {file = "identify-2.5.29-py2.py3-none-any.whl", hash = "sha256:24437fbf6f4d3fe6efd0eb9d67e24dd9106db99af5ceb27996a5f7895f24bf1b"},
+    {file = "identify-2.5.29.tar.gz", hash = "sha256:d43d52b86b15918c137e3a74fff5224f60385cd0e9c38e99d07c257f02f151a5"},
 ]
 
 [package.extras]
@@ -1430,4 +1448,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d60c38bba23eccad9c061b36fb1ad5e16f8d1654dc82be707f6e09b8beb3f337"
+content-hash = "3dfafa0a688dd8869723013b2685e2961cf2751e8acfc01932cbc8a982ddba99"
