@@ -24,6 +24,7 @@ class Help(commands.Cog):
         self.bot = bot
 
     @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore[arg-type]
+    @app_commands.rename(command_name="コマンド名")
     @app_commands.command(name="help")
     async def send_help_command(self, interaction: discord.Interaction, command_name: CommandName | None = None) -> None:
         await interaction.response.defer(ephemeral=True)
