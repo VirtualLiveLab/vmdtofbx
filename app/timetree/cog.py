@@ -6,7 +6,8 @@ from discord import app_commands
 from discord.ext import commands, tasks
 
 from app.timetree.embed import today_event_embed
-from const.enums import Color
+from components.ui.status import StatusUI
+from const.enums import Color, Status
 from timetree import Client as TimeTreeClient
 from utils.finder import Finder
 from utils.time import TimeUtils
@@ -31,6 +32,13 @@ class TimeTree(commands.Cog):
         if TimeUtils.get_now_jst().strftime("%H:%M") != "08:39":
             return
         embed = await self.get_timetree_embed()
+        if embed is None:
+            embed = discord.Embed(
+                title="エラー",
+                description="TimeTreeからの情報取得に失敗しました。",
+                color=Color.WARNING,
+            )
+
         channel = await Finder(self.bot).find_channel(int(os.environ["CHANNEL_ID"]), expected_type=discord.TextChannel)
         await channel.send(embed=embed)
         return
@@ -39,10 +47,32 @@ class TimeTree(commands.Cog):
     @app_commands.command(name="timetree")
     async def send_timetree(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=False)
-        embed = await self.get_timetree_embed()
-        await interaction.followup.send(embed=embed)
 
-    async def get_timetree_embed(self) -> discord.Embed:
+        ui = StatusUI(color=Color.MIKU)
+        ui.add(
+            key="TIMETREE",
+            status=Status.IN_PROGRESS,
+            message="TimeTreeから情報を取得しています...",
+        )
+        await ui.send(interaction.followup)
+
+        embed = await self.get_timetree_embed()
+        if embed is None:
+            ui.update(
+                key="TIMETREE",
+                status=Status.FAILED,
+                message="TimeTreeからの情報取得に失敗しました。",
+            )
+            ui.color = Color.WARNING
+            await ui.sync()
+            return
+
+        ui.remove(key="TIMETREE")
+        ui._dangerously_replace_embed(embed)  # noqa: SLF001
+        await ui.sync()
+        return
+
+    async def get_timetree_embed(self) -> discord.Embed | None:
         client = TimeTreeClient(
             api_key=os.getenv("API_KEY", ""),
             calendar_id=os.getenv("CALENDAR_ID", ""),
@@ -51,11 +81,7 @@ class TimeTree(commands.Cog):
             events = await client.get_upcoming_events()
         except Exception:
             self.bot.logger.exception("TimeTreeからの情報取得に失敗しました")
-            return discord.Embed(
-                title="TimeTreeからの情報取得に失敗しました",
-                description="時間をおいてもう一度お試しください",
-                color=Color.WARNING,
-            )
+            return None
         else:
             return today_event_embed(
                 events=events,
