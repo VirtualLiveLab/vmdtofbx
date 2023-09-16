@@ -4,8 +4,11 @@ from typing import TYPE_CHECKING
 import discord
 from discord import app_commands
 from discord.ext import commands
+from dispander import dispand
 
 from app.core.chat import embed
+from components.ui.common.button import LinkButton
+from const.enums import Color
 
 if TYPE_CHECKING:
     # import some original class
@@ -49,6 +52,35 @@ class Chat(commands.Cog):
         await interaction.response.defer(ephemeral=False)
         emb = embed.user_embed(interaction.user)
         await interaction.followup.send(embed=emb)
+
+    @commands.Cog.listener("on_message")
+    async def on_message(self, message: discord.Message) -> None:
+        if message.author.id == self.bot.user.id:  # type: ignore[union-attr]
+            return
+
+        try:
+            extracted = await dispand(message, with_reference=False, accent_color=Color.MIKU)
+        except Exception:
+            self.bot.logger.exception("dispand error")
+            extracted = []
+
+        if extracted is None or extracted == []:
+            return
+
+        for fragment in extracted:
+            view = discord.ui.View(timeout=None)
+            view.add_item(
+                LinkButton("元のメッセージ", url=fragment["jump_url"]),
+            )
+
+            try:
+                await message.channel.send(
+                    embeds=fragment["embeds"][:10],
+                    view=view,
+                )
+            except Exception:
+                self.bot.logger.exception("dispand error")
+        return
 
 
 async def setup(bot: "Bot") -> None:
