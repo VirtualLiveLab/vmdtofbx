@@ -413,3 +413,14 @@ class StatusUI:
         """
         current = self._embed
         self._embed = func(current, kwargs)
+
+    def _dangerously_replace_embed(self, embed: Embed) -> None:
+        """
+        Replace the embed object of the UI directly. This is dangerous and not recommended to use.
+
+        Args
+        ----
+        embed (`discord.Embed`):
+            The embed object to replace.
+        """
+        self._embed = embed
