@@ -541,7 +541,7 @@ develop = false
 type = "git"
 url = "https://github.com/sushi-chaaaan/dispander.git"
 reference = "custom-embed"
-resolved_reference = "52d39193bc3148f71165218896be7bf649afdc53"
+resolved_reference = "68586b29100c94ca93a3d7ef0c90072665eca25d"
 
 [[package]]
 name = "distlib"
