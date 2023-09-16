@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from app.help.const import CommandName, CommandNameList
+from app.help.const import FEATURE_LABEL_LIST, FeatureLabel
 from app.help.embed import get_help_embed
 from components.ui.common.select import Select, SelectOption, SelectOptions
 from components.ui.send import ViewSender
@@ -24,26 +24,30 @@ class Help(commands.Cog):
         self.bot = bot
 
     @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore[arg-type]
-    @app_commands.rename(command_name="コマンド名")
+    @app_commands.rename(feature_name="機能")
     @app_commands.command(name="help")
-    async def send_help_command(self, interaction: discord.Interaction, command_name: CommandName | None = None) -> None:
+    async def send_help_command(
+        self,
+        interaction: discord.Interaction,
+        feature_name: FeatureLabel | None = None,
+    ) -> None:
         await interaction.response.defer(ephemeral=True)
-        if not command_name:
-            command_name = "help"
-        view = ViewSender(HelpView(command_name=command_name))
+        if not feature_name:
+            feature_name = "ヘルプ"
+        view = ViewSender(HelpView(command_name=feature_name))
         await view.send(interaction.followup)
 
 
 class HelpView(View):
-    def __init__(self, command_name: CommandName = "help") -> None:
+    def __init__(self, command_name: FeatureLabel) -> None:
         super().__init__()
-        self.current: State[CommandName] = State(command_name, self)
+        self.current: State[FeatureLabel] = State(command_name, self)
 
     def export(self) -> ViewObject:
         async def on_select(interaction: discord.Interaction, values: list[str]) -> None:
             await interaction.response.defer(ephemeral=True)
-            if (selected := values[0]) not in CommandNameList:
-                selected = "help"
+            if (selected := values[0]) not in FEATURE_LABEL_LIST:
+                selected = "ヘルプ"
             self.current.set_state(selected)
 
         return ViewObject(
@@ -55,12 +59,12 @@ class HelpView(View):
                     options=SelectOptions(
                         max_values=1,
                         options=[
-                            SelectOption(label=f"/{n}", value=n, selected_by_default=n == self.current())
-                            for n in CommandNameList
+                            SelectOption(label=n, value=n, selected_by_default=n == self.current())
+                            for n in FEATURE_LABEL_LIST
                         ],
                     ),
                     style={
-                        "placeholder": "使い方を見たいコマンドを選択してください。",
+                        "placeholder": "使い方を見たい機能を選択してください。",
                     },
                     on_select=on_select,
                 ),

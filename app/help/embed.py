@@ -1,17 +1,17 @@
 from discord import Embed
 
-from app.help.const import CommandName
+from app.help.const import FeatureLabel
 from const.enums import Color
 
 
-def get_help_embed(name: CommandName) -> Embed:
-    d: dict[CommandName, Embed] = {
-        "buhi": buhi_embed(),
-        "help": help_embed(),
-        "helloworld": helloworld_embed(),
-        "miku": miku_embed(),
-        "vote": vote_embed(),
-        "timetree": timetree_embed(),
+def get_help_embed(name: FeatureLabel) -> Embed:
+    d: dict[FeatureLabel, Embed] = {
+        "部費ロール": buhi_embed(),
+        "ヘルプ": help_embed(),
+        "その他": other_embed(),
+        "投票": vote_embed(),
+        "ピン留め": pin_embed(),
+        "メッセージ展開": dispand_embed(),
     }
     return d[name]
 
@@ -31,17 +31,17 @@ def help_embed() -> Embed:
     return e
 
 
-def helloworld_embed() -> Embed:
+def other_embed() -> Embed:
     e = _base_embed()
-    e.title = "`/helloworld`"
-    e.description = "Hello World!を表示します。"
-    return e
-
-
-def miku_embed() -> Embed:
-    e = _base_embed()
-    e.title = "`/miku`"
-    e.description = "ミクさんが返事をしてくれるよ！"
+    e.title = "`その他の機能`"
+    e.add_field(
+        name="`/helloworld`",
+        value="Hello World!を表示します。",
+    )
+    e.add_field(
+        name="`/miku`",
+        value="ミクさんが返事をしてくれるよ！",
+    )
     return e
 
 
@@ -70,7 +70,7 @@ def vote_embed() -> Embed:
         name="使い方(集計)",
         value="""
 `/vote`コマンドを実行すると、投票の詳細とリアクションがついたメッセージが送信されます。
-リアクションを使って投票し、集計するときはそのメッセージを右クリック(PC) or 長押し(スマホ)して、
+集計するときはそのメッセージを右クリック(PC) or 長押し(スマホ)して、
 「投票を集計」を選択してください。
 """,
         inline=False,
@@ -78,17 +78,31 @@ def vote_embed() -> Embed:
     return e
 
 
-def timetree_embed() -> Embed:
+def pin_embed() -> Embed:
     e = _base_embed()
-    e.title = "`/timetree`(非推奨)"
-    e.description = "TimeTreeのAPIを使って今日の予定を表示します。"
+    e.title = "`/pin`"
+    e.description = "メッセージをピン留め(もしくは解除)します。"
     e.add_field(
-        name=":warning:",
+        name="使い方",
         value="""
-この機能は2023年12月22日以降使用できなくなります。
-理由は[TimeTreeのAPIが廃止されるため](https://timetreeapp.com/intl/ja/newsroom/2023-07-23/connectapp-api)です。
-ご迷惑をおかけします。
+メッセージを右クリック(PC) or 長押し(スマホ)して、
+「Pin / Unpin」を選択してください。
+
+まだピン留めされていないメッセージを選択するとピン留めされ、
+ピン留めされたメッセージを選択するとピン留めが解除されます。
 """,
+        inline=False,
+    )
+    return e
+
+
+def dispand_embed() -> Embed:
+    e = _base_embed()
+    e.title = "`メッセージ展開`"
+    e.description = "メッセージURLを展開します。"
+    e.add_field(
+        name="使い方",
+        value="VLL Discord内の__**Botに閲覧権限がある**__チャンネルのメッセージURLを送信すると、埋め込みで展開されます。",
         inline=False,
     )
     return e
