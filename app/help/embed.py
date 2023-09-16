@@ -80,7 +80,7 @@ def vote_embed() -> Embed:
 
 def pin_embed() -> Embed:
     e = _base_embed()
-    e.title = "`/pin`"
+    e.title = "ピン留め"
     e.description = "メッセージをピン留め(もしくは解除)します。"
     e.add_field(
         name="使い方",
