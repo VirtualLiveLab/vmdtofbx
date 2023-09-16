@@ -22,7 +22,7 @@
             "        self.bot = bot",
             "",
             "",
-            "async def setup(bot: \"Bot\") -> None",
+            "async def setup(bot: \"Bot\") -> None:",
             "    await bot.add_cog(${1}(bot))",
             "",
         ],
