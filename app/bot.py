@@ -29,7 +29,8 @@ class Bot(commands.Bot):
         self.failed_views: list[str] = []
 
         # set to None if you want to sync as global commands
-        self.app_cmd_sync_target = discord.Object(int(os.environ["GUILD_ID"]))
+        # self.app_cmd_sync_target = discord.Object(int(os.environ["GUILD_ID"]))
+        self.app_cmd_sync_target = None
 
         # set intents
         intents = discord.Intents.all()
