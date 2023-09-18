@@ -103,17 +103,17 @@ class Bot(commands.Bot):
     #         traces_sample_rate=1.0,
     #     )
 
-    def runner(self) -> None:
+    def runner(self, *, token: str) -> None:
         try:
-            asyncio.run(self._runner())
+            asyncio.run(self._runner(token=token))
         except ValueError:
             self.logger.exception("Failed to start bot")
             asyncio.run(self.shutdown(status=1))
 
-    async def _runner(self) -> None:
+    async def _runner(self, *, token: str) -> None:
         try:
             async with self:
-                await self.start(os.environ["DISCORD_BOT_TOKEN"])
+                await self.start(token)
         except TypeError:
             self.logger.exception("Failed to start bot")
             await self.shutdown()
