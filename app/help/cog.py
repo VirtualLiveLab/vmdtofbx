@@ -25,7 +25,7 @@ class Help(commands.Cog):
 
     @app_commands.guilds(int(os.environ["GUILD_ID"]))  # type: ignore[arg-type]
     @app_commands.rename(feature_name="機能")
-    @app_commands.command(name="help")
+    @app_commands.command(name="help", description="Botの使い方を表示するよ！")
     async def send_help_command(
         self,
         interaction: discord.Interaction,
