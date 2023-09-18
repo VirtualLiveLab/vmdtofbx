@@ -33,7 +33,7 @@ def help_embed() -> Embed:
 
 def other_embed() -> Embed:
     e = _base_embed()
-    e.title = "`その他の機能`"
+    e.title = "その他の機能"
     e.add_field(
         name="`/helloworld`",
         value="Hello World!を表示します。",
@@ -98,11 +98,11 @@ def pin_embed() -> Embed:
 
 def dispand_embed() -> Embed:
     e = _base_embed()
-    e.title = "`メッセージ展開`"
+    e.title = "メッセージ展開"
     e.description = "メッセージURLを展開します。"
     e.add_field(
         name="使い方",
-        value="VLL Discord内の__**Botに閲覧権限がある**__チャンネルのメッセージURLを送信すると、埋め込みで展開されます。",
+        value="Mikubotが導入されているかつ__**閲覧権限がある**__チャンネルのメッセージURLを送信すると、埋め込みで展開されます。",
         inline=False,
     )
     return e
