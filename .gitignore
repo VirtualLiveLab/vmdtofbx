@@ -1,5 +1,5 @@
 .vscode
 build
-.fbx
-.fbm
-.vmd
+*.fbx
+*.fbm
+*.vmd
