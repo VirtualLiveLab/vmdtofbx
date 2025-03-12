@@ -43,14 +43,14 @@ void ConfigureBlendShapeDeformer(FbxMesh *pMesh, FbxAnimLayer *pAnimlayer, std::
 
     for (int i = 0; i < pShapekeyNames.size(); i++)
     {
-        const char *shapekeyname = pShapekeyNames.at(i).c_str();
+        const char *shapekey_name = pShapekeyNames.at(i).c_str();
 
         // BlendShapeChannel を作成
-        FbxBlendShapeChannel *lBlendShapeChannel = FbxBlendShapeChannel::Create(lBlendShapeDeformer, shapekeyname);
+        FbxBlendShapeChannel *lBlendShapeChannel = FbxBlendShapeChannel::Create(lBlendShapeDeformer, shapekey_name);
         lBlendShapeDeformer->AddBlendShapeChannel(lBlendShapeChannel);
 
         // Shape を作成し、BlendShapeChannel に登録
-        FbxShape *targetshape = FbxShape::Create(pMesh, shapekeyname);
+        FbxShape *targetshape = FbxShape::Create(pMesh, shapekey_name);
         lBlendShapeChannel->AddTargetShape(targetshape);
     }
 }

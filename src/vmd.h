@@ -52,17 +52,17 @@ std::vector<VMD_SKIN> ReadAndGetSkinData(std::ifstream &vmdfile)
 // 取得した vmdの表情の全データより、シェイプキー一覧の抽出
 std::vector<std::string> GetShapekeyNames(std::vector<VMD_SKIN> pSkinData)
 {
-    std::vector<std::string> shapekeynames;
+    std::vector<std::string> shapekey_names;
     for (const auto &skin : pSkinData)
     {
-        std::string shapekeyname(skin.SkinName);
-        auto it = std::find(shapekeynames.begin(), shapekeynames.end(), shapekeyname);
-        if (it == shapekeynames.end())
+        std::string shapekey_name(skin.SkinName);
+        auto it = std::find(shapekey_names.begin(), shapekey_names.end(), shapekey_name);
+        if (it == shapekey_names.end())
         {
-            shapekeynames.push_back(shapekeyname);
+            shapekey_names.push_back(shapekey_name);
         }
     }
-    return shapekeynames;
+    return shapekey_names;
 }
 
 #pragma pack(pop)

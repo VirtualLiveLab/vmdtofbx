@@ -72,3 +72,10 @@ path/to/vmdtofbx path/to/<filename>.vmd "あ=a" "い=i" "う=u" "え=e" "お=o"
 ```
 
 vmdファイルと同じディレクトリに「<vmdファイルの名前>.fbx」が生成されます。
+
+<br>
+
+License
+-------
+
+[MIT](LICENSE.md)ですがコメントくれたら作者は喜びます(*'ω'*)

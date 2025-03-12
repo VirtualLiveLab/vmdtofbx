@@ -18,15 +18,15 @@ int main(int argc, char *argv[])
 
     // FbxManager, FbxIOSettings の設定と新規Scene の作成
     FbxManager *lSdkManager = FbxManager::Create();
-    FbxIOSettings *ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
-    lSdkManager->SetIOSettings(ios);
+    FbxIOSettings *IOSettings = FbxIOSettings::Create(lSdkManager, IOSROOT);
+    lSdkManager->SetIOSettings(IOSettings);
     FbxScene *lScene = FbxScene::Create(lSdkManager, "New Scene");
 
     // 出力先パスの設定と、Exporter の準備
     string fbxfilename = vmdfilepath.stem().string() + ".fbx";
     filesystem::path outputfbxpath = vmdfilepath.parent_path() / fbxfilename;
     FbxExporter *lExporter = FbxExporter::Create(lSdkManager, "");
-    lExporter->Initialize(outputfbxpath.string().c_str(), -1, ios);
+    lExporter->Initialize(outputfbxpath.string().c_str(), -1, IOSettings);
 
     // FbxAnimStack と FbxAnimationLayer の作成
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(lScene, "Take_VMDshapeAnimation");
@@ -35,10 +35,10 @@ int main(int argc, char *argv[])
 
     // 表情アニメーション全フレームと、シェイプキーの一覧を取得
     vector<VMD_SKIN> skindata = ReadAndGetSkinData(vmdfile);
-    vector<string> shapekeynames = GetShapekeyNames(skindata);
+    vector<string> shapekey_names = GetShapekeyNames(skindata);
 
     // FBX SDK では UTF-8 で扱う必要あり
-    for (auto &name : shapekeynames)
+    for (auto &name : shapekey_names)
     {
         name = sjis_to_utf8(name);
     }
@@ -50,14 +50,14 @@ int main(int argc, char *argv[])
     lScene->GetRootNode()->AddChild(lMeshNode);
 
     // そのメッシュにおいて、シェイプキーとそれに対応する AnimationCurve を作成
-    ConfigureBlendShapeDeformer(lMesh, lAnimLayer, shapekeynames);
+    ConfigureBlendShapeDeformer(lMesh, lAnimLayer, shapekey_names);
     unordered_map<string, FbxAnimCurve *> shapecurvemap = CreateShapeCurveMap(lMesh, lAnimLayer);
 
     // フレーム毎にシェイプキーに対応する AnimationCurve を取得してアニメーションを記録
     for (const auto &frame : skindata)
     {
-        string shapekeyname = sjis_to_utf8(string(frame.SkinName));
-        auto it = shapecurvemap.find(shapekeyname);
+        string shapekey_name = sjis_to_utf8(string(frame.SkinName));
+        auto it = shapecurvemap.find(shapekey_name);
         if (it != shapecurvemap.end())
         {
             FbxAnimCurve *lCurve = it->second;
@@ -65,10 +65,11 @@ int main(int argc, char *argv[])
             {
                 lCurve->KeyModifyBegin();
 
-                // 表情の1フレーム分を登録、MMDでのシェイプキー値は 0~1 なので注意
+                // 表情の1フレーム分のキーを登録
                 FbxTime lTime;
                 lTime.SetFrame(frame.FrameNo, FbxTime::eFrames30); // MMD は 30fps
                 int keyindex = lCurve->KeyAdd(lTime);
+                // MMDでのシェイプキー値は 0~1 なので、fbxに合わせて100倍する
                 lCurve->KeySet(keyindex, lTime, frame.Weight * 100.0, FbxAnimCurveDef::eInterpolationLinear);
 
                 lCurve->KeyModifyEnd();
