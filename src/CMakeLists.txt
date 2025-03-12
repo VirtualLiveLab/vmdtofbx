@@ -54,13 +54,15 @@ if(WIN32)
 endif()
 
 # ライブラリのリンク
-if(FBX_STATIC_MT OR FBX_STATIC_MD)
-    target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>)
-    target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk $<$<CONFIG:Debug>:wininet.lib>)
+if(WIN32)
+    if(FBX_SHARED)
+        target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk)
+    else()
+        target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>)
+        target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk $<$<CONFIG:Debug>:wininet.lib>)
+    endif()
 elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk Iconv::Iconv)
-else()
-    target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk)
 endif()
 
 # ライブラリリンク後の設定（サンプルスクリプトで定義）
