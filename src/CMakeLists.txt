@@ -40,7 +40,7 @@ add_executable(${PROJECT_NAME}
 )
 
 # コンパイルオプションの設定
-if(MSVC)
+if(WIN32)
     target_compile_options(${PROJECT_NAME} PRIVATE /source-charset:UTF-8)
 elseif(UNIX)
     target_compile_options(${PROJECT_NAME} PRIVATE -finput-charset=UTF-8)
