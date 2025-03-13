@@ -34,16 +34,16 @@ vmdファイルに含まれる表情データのみを面のメッシュに記�
 
         ```Bash
         cd src
-        cmake -S . -B build -FBX_SHARED=1
-        cmake --build build <config> # Release または Debug
+        cmake -S . -B build -DFBX_SHARED=1
+        cmake --build build --config <config> # Release または Debug
         ```
 
     - 静的リンクの場合
 
         ```Bash
         cd src
-        cmake -S . -B build -FBX_STATIC_RTL=1
-        cmake --build build <config> # Release または Debug
+        cmake -S . -B build -DFBX_STATIC_RTL=1
+        cmake --build build --config <config> # Release または Debug
         ```
 
     いずれも *build/\<config>* 下にビルドされたファイルが出力されます。<br>
