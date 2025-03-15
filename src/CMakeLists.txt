@@ -2,14 +2,16 @@ cmake_minimum_required(VERSION 3.17)
 project(vmdtofbx)
 
 # FBX SDK のパスを指定 - ビルド前に変更してください
-if(WIN32 AND MSVC)
-    set(FBX_SDK_ROOT "C:/Program Files/Autodesk/FBX/FBX SDK/2020.3.7")
-elseif(UNIX)
-    set(FBX_SDK_ROOT "/home/username/fbxsdk")
-    # Windows のみの FbxAnsiToUTF8() への代替
-    find_package(Iconv REQUIRED)
-else()
+set(FBX_SDK_ROOT "C:/Program Files/Autodesk/FBX/FBX SDK/2020.3.7")
+
+# OS の確認
+if(NOT WIN32 AND NOT UNIX)
     message(FATAL_ERROR "Only Windows (MSVC) or UNIX is supported.")
+endif()
+
+# Windows のみの FbxAnsiToUTF8() への代替
+if(UNIX)
+    find_package(Iconv REQUIRED)
 endif()
 
 # アーキテクチャの種類を取得
