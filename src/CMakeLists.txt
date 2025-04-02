@@ -60,6 +60,7 @@ if(WIN32)
     if(FBX_SHARED)
         target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk)
     else()
+        # 公式ドキュメント「Configuring the FBX SDK for Windows」の Configuring Visual Studio を参照
         target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>)
         target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk $<$<CONFIG:Debug>:wininet.lib>)
     endif()
