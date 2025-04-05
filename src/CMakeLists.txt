@@ -14,6 +14,11 @@ if(UNIX)
     find_package(Iconv REQUIRED)
 endif()
 
+# CMAKE_CXX_FLAGS ではなく Abstraction によって MSVC runtime library を指定
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif(POLICY CMP0091)
+
 # アーキテクチャの種類を取得
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     if("${CMAKE_C_COMPILER_ARCHITECTURE_ID}" STREQUAL "ARM64")
