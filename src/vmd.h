@@ -1,103 +1,70 @@
-﻿#ifndef VMDTOFBX_VMD_H
-#define VMDTOFBX_VMD_H
-typedef unsigned long DWORD;
-typedef unsigned char BYTE;
+// VMD format & functions
+// source : https://blog.goo.ne.jp/torisu_tetosuki/e/bc9f1c4d597341b394bd02b64597499d
 
-#include <cstdio>
+#ifndef __VMD_H__
+#define __VMD_H__
+
+#include <cstdint>
 #include <fstream>
 #include <vector>
-#include <map>
-#include <string>
-#include <iostream>
-#include <list>
-using namespace std;
+#include <algorithm>
 
+#pragma pack(push, 1)
 
-struct VMDHeader{
-    char Version[30];
-    char ModelName[20];
-    //unsigned long FrameData[4];
+static const size_t VMD_HEADER_SIZE = 50;
+static const size_t VMD_MOTION_SIZE = 111;
+
+// 表情データ
+struct VMD_SKIN
+{
+    char SkinName[15]; // Shift_JIS
+    uint32_t FrameNo;
+    float Weight;
 };
 
-struct VMDMotionFrame{
-    char BoneName[15];
-    DWORD FrameNo;
-    float Location[3];
-    float Rotation[4];
-    BYTE Interpolation[64];
-};
+// vmdファイル内の表情データ部分の読み出し
+std::vector<VMD_SKIN> ReadAndGetSkinData(std::ifstream &vmdfile)
+{
+    // skin count 部分まで読み飛ばす
+    vmdfile.ignore(VMD_HEADER_SIZE);
+    uint32_t vmd_motion_count;
+    vmdfile.read(reinterpret_cast<char *>(&vmd_motion_count), sizeof(vmd_motion_count));
+    for (size_t i = 0; i < static_cast<size_t>(vmd_motion_count); i++)
+    {
+        vmdfile.ignore(VMD_MOTION_SIZE);
+    }
 
-//
-//
-// 表情データ数
-struct VMDMorphHeader {
-    unsigned long Count; // 表情データ数
-} ;
+    // skin count 部分の読み出し
+    uint32_t vmd_skin_count;
+    vmdfile.read(reinterpret_cast<char *>(&vmd_skin_count), sizeof(vmd_skin_count));
 
-struct VMDMorphFrame {
-    char SkinName[15]; // 表情名
-    unsigned long FrameNo; // フレーム番号
-    float Weight; // 表情の設定値(表情スライダーの値)
-};
-//
-// カメラデータ数
-struct VMD_CAMERA_COUNT {
-    unsigned long Count; // カメラデータ数
-} ;
+    // skin data の取得
+    std::vector<VMD_SKIN> skindata;
+    for (size_t i = 0; i < static_cast<size_t>(vmd_skin_count); i++)
+    {
+        VMD_SKIN vmd_skin;
+        vmdfile.read(reinterpret_cast<char *>(&vmd_skin), sizeof(VMD_SKIN));
+        skindata.push_back(vmd_skin);
+    }
+    return skindata;
+}
 
-//// カメラデータ
-//struct VMD_CAMERA { // 61 Bytes // カメラ
-//    unsigned long FrameNo; // フレーム番号
-//    float Length; // -(距離)
-//    float Location[3]; // 位置
-//    float Rotation[3]; // オイラー角 // X軸は符号が反転しているので注意 // 回転
-//    char Interpolation[24]; // おそらく[6][4](未検証) // 補完
-//    unsigned long ViewingAngle; // 視界角
-//    char Perspective; // 0:on 1:off // パースペクティブ
-//} ;
-//
-//// 照明データ数
-//struct VMD_LIGHT_COUNT {
-//    unsigned long Count; // 照明データ数
-//} ;
-//
-//// 照明データ
-//struct VMD_LIGHT { // 28 Bytes // 照明
-//    unsigned long FrameNo; // フレーム番号
-//    float RGB[3]; // RGB各値/256 // 赤、緑、青
-//    float Location[3]; // X, Y, Z
-//} ;
-//
-//// セルフシャドウデータ数
-//struct VMD_SELF_SHADOW_COUNT {
-//    unsigned long Count; // セルフシャドウデータ数
-//} vmd_self_shadow_count;
-//
-//// セルフシャドウデータ
-//struct VMD_SELF_SHADOW { // 9 Bytes // セルフシャドー
-//    unsigned long FrameNo; // フレーム番号
-//    char Mode; // 00-02 // モード
-//    float Distance; // 0.1 - (dist * 0.00001) // 距離
-//};
-//
-//
+// 取得した vmdの表情の全データより、シェイプキー一覧の抽出
+std::vector<std::string> GetShapekeyNames(std::vector<VMD_SKIN> pSkinData)
+{
+    std::vector<std::string> shapekey_names;
+    for (const auto &skin : pSkinData)
+    {
+        std::string shapekey_name(skin.SkinName);
+        auto it = std::find(shapekey_names.begin(), shapekey_names.end(), shapekey_name);
+        if (it == shapekey_names.end())
+        {
+            shapekey_names.push_back(shapekey_name);
+        }
+    }
+    return shapekey_names;
+}
 
-class VMD{
-public:
-    int BoneCount;
-    int MorphCount;
-    int CameraCount;
-//    int LightCount;
-//    int ShadowCount;
-    VMDHeader Header;
-    std::vector<VMDMotionFrame> *MotionFrames;
-    std::vector<VMDMorphFrame> *MorphFrames;
+#pragma pack(pop)
 
-public :
-    void Read(const char* filePath);
-    std::vector<const char*> GetMorphList();
-
-
-};
-
-#endif //VMDTOFBX_VMD_H
+#endif //__VMD_H__

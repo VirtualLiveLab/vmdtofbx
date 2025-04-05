@@ -1,57 +1,79 @@
 # vmdtofbx
+vmdファイルに含まれる表情データのみを面のメッシュに記録し、fbx形式にして出力するプロジェクト
 
-現在VMDに含まれる表情データのみを球体に張り付けてFbxにすることが可能
-自分でBuildするためには、FbxSDKの設定が必要なので注意してください
+<br>
 
-作者はUnityでfbxを取り込んでAnimationを取りこんでます。不具合が
-BugとかあったらIssueくれたらうれしいです
+## 環境
+- cmake 3.17 and above
 
-## Environment
+- FBX SDK 2020.3.7
 
-- cmake 3.16 or higher
-- Visual Studio 16 2019
-- FBXSDK 2020.2.1
+- Windows の場合
+    - Visual Studio 17 2022
 
-## How to build
+- Linux の場合
+    - GCC version 9.3 and above
+    - iconv
 
-### windows
+<br>
 
-1. cmakeファイルの編集 
+## ビルド方法
 
-    導入したFBXSDKのパスに合わせて
-    5行目のファイルパスを変えてください
-    ```asm
-    set(FBX_SDK_DIR "D:/ProgramFiles/Autodesk/FBX/2020.2.1")
-    ```
-2. ビルド方法
+### Windows
 
-    以下のコマンドでプロジェクトの作成を行ってください
-    ```asm
-    mkdir build
-    cd build
-    cmake ..
-    cmake --build .
+1. CMakeLists.txt の編集 
+
+    導入した FBX SDK のパスに合わせて `FBX_SDK_ROOT` の設定パスを変えてください。
+    ```CMake
+    set(FBX_SDK_ROOT "C:/Program Files/Autodesk/FBX/FBX SDK/2020.3.7")
     ```
 
-    Debug Buildの場合はこちらのオプションをつけて実行してください
-    ```asm
-    cmake .. -DCMAKE_BUILD_TYPE=Debug
-    ```
+2. ビルド
 
-    VisualStudioのプロジェクトが作成されるので、ReleaseもしくはDebugモードでビルドを行ってください.
+    - 動的リンクの場合
 
----
-### linux
-開発中です
+        ```Bash
+        cd src
+        cmake -S . -B build -DFBX_SHARED=1
+        cmake --build build --config <config> # Release または Debug
+        ```
 
-## How to use
+    - 静的リンクの場合
 
-Releaseからexeを落としてきてパスを通してください。
+        ```Bash
+        cd src
+        cmake -S . -B build -DFBX_STATIC_RTL=1
+        cmake --build build --config <config> # Release または Debug
+        ```
 
-以下のコマンドを打つことで実行できます
+    いずれも *build/\<config>* 下にビルドされたファイルが出力されます。<br>
+    動的リンクの場合、同ディレクトリに libfbxsdk.dll がコピーされます。
+
+
+### Linux
+
+```Bash
+cd src
+cmake -S . B build -DCMAKE_BUILD_TYPE=<config> # Release または Debug
+cmake --build build
 ```
-vmdtofbx <vmdファイルのパス>
+
+*build* 下にビルドされたファイルが生成され、*build/\<config>* 下に libfbxsdk.so がコピーされます。
+
+
+
+<br>
+
+## 使用方法
+まず vmdファイルを引数にとり、その後「"変換したい名前=変換後の名前"」という形式でシェイプキー名の変換を指定してください。
+
 ```
+path/to/vmdtofbx path/to/<filename>.vmd "あ=a" "い=i" "う=u" "え=e" "お=o"
+```
+
+vmdファイルと同じディレクトリに「<vmdファイルの名前>.fbx」が生成されます。
+
+<br>
 
 License
 -------
