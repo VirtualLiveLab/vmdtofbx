@@ -59,15 +59,38 @@ void ConfigureBlendShapeDeformer(FbxMesh *pMesh, FbxAnimLayer *pAnimlayer, std::
 std::unordered_map<std::string, FbxAnimCurve *> CreateShapeCurveMap(FbxMesh *pMesh, FbxAnimLayer *pAnimLayer)
 {
     std::unordered_map<std::string, FbxAnimCurve *> shapecurvemap;
+    FbxScene *lScene = pMesh->GetScene();
+    FbxBlendShape *lBlendShapeDeformer = nullptr;
 
-    FbxBlendShape *lBlendShapeDeformer = FbxCast<FbxBlendShape>(pMesh->GetDeformer(0));
-    for (int i = 0; i < lBlendShapeDeformer->GetBlendShapeChannelCount(); i++)
+    // メッシュの BlendShape Deformer の取得
+    for (int i = 0; i < pMesh->GetDeformerCount(); i++)
     {
-        FbxBlendShapeChannel *shapekey = lBlendShapeDeformer->GetBlendShapeChannel(i);
+        FbxDeformer *lDeformer = pMesh->GetDeformer(i);
+        if (lDeformer->Is<FbxBlendShape>())
+        {
+            lBlendShapeDeformer = FbxCast<FbxBlendShape>(lDeformer);
+            break;
+        }
+    }
 
-        // AnimationCurveNode と AnimationCurve を作成
-        FbxAnimCurveNode *lAnimCurveNode = shapekey->DeformPercent.GetCurveNode(pAnimLayer, true);
-        shapecurvemap.emplace(shapekey->GetName(), shapekey->DeformPercent.GetCurve(pAnimLayer, true));
+    if (lScene && lBlendShapeDeformer)
+    {
+        for (int i = 0; i < lBlendShapeDeformer->GetBlendShapeChannelCount(); i++)
+        {
+            FbxBlendShapeChannel *shapekey = lBlendShapeDeformer->GetBlendShapeChannel(i);
+
+            // AnimationCurveNode と AnimationCurve を作成
+            FbxAnimCurveNode *lAnimCurveNode = FbxAnimCurveNode::CreateTypedCurveNode(shapekey->DeformPercent, lScene);
+            FbxAnimCurve *lAnimCurve = FbxAnimCurve::Create(lScene, shapekey->GetName());
+
+            // CurveNode を AnimationLayer および Property に、Curve を CurveNode の Channel に接続
+            pAnimLayer->AddMember(lAnimCurveNode);
+            shapekey->DeformPercent.ConnectSrcObject(lAnimCurveNode);
+            lAnimCurveNode->ConnectToChannel(lAnimCurve, "DeformPercent");
+
+            // マップにシェイプキー名と Curve を登録
+            shapecurvemap.emplace(shapekey->GetName(), lAnimCurve);
+        }
     }
 
     return shapecurvemap;
@@ -76,15 +99,30 @@ std::unordered_map<std::string, FbxAnimCurve *> CreateShapeCurveMap(FbxMesh *pMe
 // 既存のシェイプキーの名称を変更
 void UpdateShapekeyName(FbxMesh *pMesh, std::string pOldName, std::string pNewName)
 {
-    FbxBlendShape *lBlendShapeDeformer = FbxCast<FbxBlendShape>(pMesh->GetDeformer(0));
-    for (int i = 0; i < lBlendShapeDeformer->GetBlendShapeChannelCount(); i++)
+    FbxBlendShape *lBlendShapeDeformer = nullptr;
+
+    // メッシュの BlendShape Deformer の取得
+    for (int i = 0; i < pMesh->GetDeformerCount(); i++)
     {
-        FbxBlendShapeChannel *shapekey = lBlendShapeDeformer->GetBlendShapeChannel(i);
-        if (std::string(shapekey->GetName()) == pOldName)
+        FbxDeformer *lDeformer = pMesh->GetDeformer(i);
+        if (lDeformer->Is<FbxBlendShape>())
         {
-            // BlendShapeChannel と Shape の両方の名称を変える
-            shapekey->SetName(pNewName.c_str());
-            shapekey->GetTargetShape(0)->SetName(pNewName.c_str());
+            lBlendShapeDeformer = FbxCast<FbxBlendShape>(lDeformer);
+            break;
+        }
+    }
+
+    if (lBlendShapeDeformer)
+    {
+        for (int i = 0; i < lBlendShapeDeformer->GetBlendShapeChannelCount(); i++)
+        {
+            FbxBlendShapeChannel *shapekey = lBlendShapeDeformer->GetBlendShapeChannel(i);
+            if (std::string(shapekey->GetName()) == pOldName)
+            {
+                // BlendShapeChannel と Shape の両方の名称を変える
+                shapekey->SetName(pNewName.c_str());
+                shapekey->GetTargetShape(0)->SetName(pNewName.c_str());
+            }
         }
     }
 }
