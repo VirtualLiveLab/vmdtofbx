@@ -5,6 +5,9 @@
 #include <filesystem>
 using namespace std;
 
+// 変換状況をデバッグ表示する関数
+void DebugConverting(uint32_t FrameNo, string name_processing, unordered_map<string, string> map);
+
 int main(int argc, char *argv[])
 {
     // vmdファイルの読み込み
@@ -15,6 +18,20 @@ int main(int argc, char *argv[])
         return -1;
     }
     ifstream vmdfile(vmdfilepath, ios::binary);
+
+    // 引数を用いて、シェイプキー名称の変更前後のマップを作成
+    unordered_map<string, string> mapping;
+    for (int i = 2; i < argc; ++i)
+    {
+        string arg(argv[i]);
+        size_t pos = arg.find('=');
+        if (pos != string::npos)
+        {
+            string key = arg.substr(0, pos);
+            string value = arg.substr(pos + 1);
+            mapping[key] = value;
+        }
+    }
 
     // FbxManager, FbxIOSettings の設定と新規Scene の作成
     FbxManager *lSdkManager = FbxManager::Create();
@@ -69,27 +86,19 @@ int main(int argc, char *argv[])
                 FbxTime lTime;
                 lTime.SetFrame(frame.FrameNo, FbxTime::eFrames30); // MMD は 30fps
                 int keyindex = lCurve->KeyAdd(lTime);
+
                 // MMDでのシェイプキー値は 0~1 なので、fbxに合わせて100倍する
                 lCurve->KeySet(keyindex, lTime, frame.Weight * 100.0, FbxAnimCurveDef::eInterpolationLinear);
 
                 lCurve->KeyModifyEnd();
+
+                // ターミナルに変換状況をデバッグ表示
+                DebugConverting(frame.FrameNo, frame.SkinName, mapping);
             }
         }
     }
 
     // 名称変更前後のマップ（引数の指定から作成）を元に、既存のシェイプキー名を変更
-    unordered_map<string, string> mapping;
-    for (int i = 2; i < argc; ++i)
-    {
-        string arg(argv[i]);
-        size_t pos = arg.find('=');
-        if (pos != string::npos)
-        {
-            string key = arg.substr(0, pos);
-            string value = arg.substr(pos + 1);
-            mapping[key] = value;
-        }
-    }
     for (const auto &map : mapping)
     {
 #ifdef _WIN32
@@ -104,13 +113,35 @@ int main(int argc, char *argv[])
 
     // Scene の出力
     if (lExporter->Export(lScene))
-        cout << "Program Success!" << endl;
+        cout << "\nProgram Success!" << endl;
     else
-        cout << "Failed to export the fbx file..." << endl;
+        cout << "\nError occurred while exporting the scene..." << endl;
 
     // Cleanup
     lExporter->Destroy();
     lSdkManager->Destroy();
 
     return 0;
+}
+
+void DebugConverting(uint32_t FrameNo, string name_processing, unordered_map<string, string> map)
+{
+    for (const auto &name : map)
+    {
+        string name_old = name.first;
+        string name_new = name.second;
+
+        // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
+#ifdef _WIN32
+        if (name_processing == name_old)
+        {
+            cout << FrameNo << " " << name_processing << " -> " << name_new << endl;
+        }
+#else
+        if (sjis_to_utf8(name_processing) == name_old)
+        {
+            cout << FrameNo << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
+        }
+#endif
+    }
 }
