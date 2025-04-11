@@ -62,7 +62,7 @@ cmake --build build
 
 
 ### 注意
-FBX SDK には libfbxsdk の pdb ファイルが含まれていません。したがって、FBX SDK のみで Debug ビルドを行うと、デバッグ情報が見つからない旨のエラーが出ると思います（MSVC の場合、LNK4099エラー）。必要であれば、[同ウェブサイト](https://aps.autodesk.com/developer/overview/fbx-sdk)の「FBX PDB」より pdb ファイルを入手してください。
+FBX SDK には libfbxsdk の pdb ファイルが含まれていません。したがって、FBX SDK のみで Debug ビルドを行うと、デバッグ情報が見つからない旨のエラーが出ると思います（MSVC の場合、LNK4099エラー）。必要であれば、[ウェブサイト](https://aps.autodesk.com/developer/overview/fbx-sdk)の「FBX PDB」より pdb ファイルを入手してください。
 
 
 <br>
