@@ -6,7 +6,7 @@
 using namespace std;
 
 // 変換状況をデバッグ表示する関数
-void DebugConverting(uint32_t FrameNo, string name_processing, unordered_map<string, string> map);
+void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<string, string> shape_rename_map);
 
 int main(int argc, char *argv[])
 {
@@ -124,9 +124,9 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void DebugConverting(uint32_t FrameNo, string name_processing, unordered_map<string, string> map)
+void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<string, string> shape_rename_map)
 {
-    for (const auto &name : map)
+    for (const auto &name : shape_rename_map)
     {
         string name_old = name.first;
         string name_new = name.second;
@@ -135,12 +135,12 @@ void DebugConverting(uint32_t FrameNo, string name_processing, unordered_map<str
 #ifdef _WIN32
         if (name_processing == name_old)
         {
-            cout << FrameNo << " " << name_processing << " -> " << name_new << endl;
+            cout << frame_no << " " << name_processing << " -> " << name_new << endl;
         }
 #else
         if (sjis_to_utf8(name_processing) == name_old)
         {
-            cout << FrameNo << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
+            cout << frame_no << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
         }
 #endif
     }
