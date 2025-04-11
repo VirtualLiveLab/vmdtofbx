@@ -104,9 +104,9 @@ int main(int argc, char *argv[])
 
     // Scene の出力
     if (lExporter->Export(lScene))
-        cout << "The fbx file successfully exported." << endl;
+        cout << "Program Success!" << endl;
     else
-        cout << "Failed to export test fbx file..." << endl;
+        cout << "Failed to export the fbx file..." << endl;
 
     // Cleanup
     lExporter->Destroy();
