@@ -1,7 +1,7 @@
-#include <fbxsdk.h>
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <fbxsdk.h>
 
 // シェイプアニメーション記録用の四角いメッシュを作成
 FbxMesh *CreateSquareMesh(FbxScene *pScene)

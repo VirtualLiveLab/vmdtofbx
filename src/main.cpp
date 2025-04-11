@@ -1,8 +1,8 @@
+#include <iostream>
+#include <filesystem>
 #include "vmd.h"
 #include "FbxShapeUtils.h"
 #include "ConvertEncoding.h"
-#include <iostream>
-#include <filesystem>
 using namespace std;
 
 // 変換状況をデバッグ表示する関数
