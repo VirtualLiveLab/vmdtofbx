@@ -19,6 +19,16 @@ int main(int argc, char *argv[])
     }
     ifstream vmdfile(vmdfilepath, ios::binary);
 
+    // vmdファイルから、表情アニメーション全フレームと、シェイプキーの一覧を取得
+    vector<VMD_SKIN> skindata = ReadAndGetSkinData(vmdfile);
+    vector<string> shapekey_names = GetShapekeyNames(skindata);
+
+    // FBX SDK では UTF-8 で扱う必要あり
+    for (auto &name : shapekey_names)
+    {
+        name = sjis_to_utf8(name);
+    }
+
     // 引数を用いて、シェイプキー名称の変更前後のマップを作成
     unordered_map<string, string> mapping;
     for (int i = 2; i < argc; ++i)
@@ -49,16 +59,6 @@ int main(int argc, char *argv[])
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(lScene, "Take_VMDshapeAnimation");
     FbxAnimLayer *lAnimLayer = FbxAnimLayer::Create(lScene, "BaseAnimation");
     lAnimStack->AddMember(lAnimLayer);
-
-    // 表情アニメーション全フレームと、シェイプキーの一覧を取得
-    vector<VMD_SKIN> skindata = ReadAndGetSkinData(vmdfile);
-    vector<string> shapekey_names = GetShapekeyNames(skindata);
-
-    // FBX SDK では UTF-8 で扱う必要あり
-    for (auto &name : shapekey_names)
-    {
-        name = sjis_to_utf8(name);
-    }
 
     // アニメーションを記録するメッシュの作成
     FbxMesh *lMesh = CreateSquareMesh(lScene);
