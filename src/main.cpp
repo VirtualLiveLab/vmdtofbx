@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         cout << "\nError occurred while exporting the scene..." << endl;
 
     // Cleanup
-    lExporter->Destroy();
+    vmdfile.close();
     lSdkManager->Destroy();
 
     return 0;
