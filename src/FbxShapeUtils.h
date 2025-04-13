@@ -35,7 +35,7 @@ FbxMesh *CreateSquareMesh(FbxScene *pScene)
 }
 
 // メッシュ内のシェイプキー関連要素を設定
-void ConfigureBlendShapeDeformer(FbxMesh *pMesh, FbxAnimLayer *pAnimlayer, std::vector<std::string> pShapekeyNames)
+void ConfigureBlendShapeDeformer(FbxMesh *pMesh, std::vector<std::string> pShapekeyNames)
 {
     // BlendShapeDeformer を作成
     FbxBlendShape *lBlendShapeDeformer = FbxBlendShape::Create(pMesh, "Deformer_VMDshapeAnimation");
