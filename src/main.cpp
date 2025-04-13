@@ -66,8 +66,10 @@ int main(int argc, char *argv[])
     lMeshNode->SetNodeAttribute(lMesh);
     lScene->GetRootNode()->AddChild(lMeshNode);
 
-    // そのメッシュにおいて、シェイプキーとそれに対応する AnimationCurve を作成
-    ConfigureBlendShapeDeformer(lMesh, lAnimLayer, shapekey_names);
+    // メッシュにシェイプキーを作成
+    ConfigureBlendShapeDeformer(lMesh, shapekey_names);
+
+    // シェイプキーの AnimationCurve を設定し、シェイプキー名とのマップを作成
     unordered_map<string, FbxAnimCurve *> shapecurvemap = CreateShapeCurveMap(lMesh, lAnimLayer);
 
     // フレーム毎にシェイプキーに対応する AnimationCurve を取得してアニメーションを記録
