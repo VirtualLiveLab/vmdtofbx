@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     }
 
     // 引数を用いて、シェイプキー名称の変更前後のマップを作成
-    unordered_map<string, string> mapping;
+    unordered_map<string, string> shape_rename_map;
     for (int i = 2; i < argc; ++i)
     {
         string arg(argv[i]);
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         {
             string key = arg.substr(0, pos);
             string value = arg.substr(pos + 1);
-            mapping[key] = value;
+            shape_rename_map[key] = value;
         }
     }
 
@@ -93,22 +93,22 @@ int main(int argc, char *argv[])
                 lCurve->KeyModifyEnd();
 
                 // ターミナルに変換状況をデバッグ表示
-                DebugConverting(frame.FrameNo, frame.SkinName, mapping);
+                DebugConverting(frame.FrameNo, frame.SkinName, shape_rename_map);
             }
         }
     }
 
     // 名称変更前後のマップ（引数の指定から作成）を元に、既存のシェイプキー名を変更
-    for (const auto &map : mapping)
+    for (const auto &map : shape_rename_map)
     {
 #ifdef _WIN32
         // Windows のターミナル入力が Shift_JIS
-        string oldname = sjis_to_utf8(map.first);
+        string name_old = sjis_to_utf8(map.first);
 #else
-        string oldname = map.first;
+        string name_old = map.first;
 #endif
-        string newname = map.second;
-        UpdateShapekeyName(lMesh, oldname, newname);
+        string name_new = map.second;
+        UpdateShapekeyName(lMesh, name_old, name_new);
     }
 
     // Scene の出力
