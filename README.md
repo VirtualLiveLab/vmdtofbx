@@ -6,7 +6,9 @@ vmdファイルに含まれる表情データのみを面のメッシュに記�
 ## 環境
 - cmake 3.17 and above
 
-- FBX SDK 2020.3.7
+- FBX SDK 2020.3.7<br>
+    Link: https://aps.autodesk.com/developer/overview/fbx-sdk
+
 
 - Windows の場合
     - Visual Studio 17 2022
@@ -79,3 +81,5 @@ License
 -------
 
 [MIT](LICENSE.md)ですがコメントくれたら作者は喜びます(*'ω'*)
+
+**注意:** FBX SDK の License Agreement 1.1.5条に基づき、[NOTICE](/NOTICE.md)ファイルにおいて、FBX ライブラリ使用に関する文を記載しています。
