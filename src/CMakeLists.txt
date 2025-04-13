@@ -53,9 +53,8 @@ elseif(UNIX)
     target_compile_options(${PROJECT_NAME} PRIVATE -finput-charset=UTF-8)
 endif()
 
-# Note:
-#    "debug" ディレクトリ下のライブラリが何故かデバッグ情報持っていないらしい
-#   今は警告を非表示にしています
+# FBX SDK には libfbxsdk の pdb ファイルが含まれていない（同ウェブサイトで別途配布）
+# そのため、Debug ビルドの際の LNK4099 エラーは出力されないようにしておく
 if(WIN32)
     target_link_options(${PROJECT_NAME} PRIVATE /IGNORE:4099)
 endif()
@@ -73,5 +72,5 @@ elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} PRIVATE fbxsdk Iconv::Iconv)
 endif()
 
-# ライブラリリンク後の設定（サンプルスクリプトで定義）
+# ライブラリリンク後の設定（fbxsdk.cmakeで定義された関数）
 fbx_target_finalize(${PROJECT_NAME})

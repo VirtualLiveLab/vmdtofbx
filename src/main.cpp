@@ -1,9 +1,12 @@
+#include <iostream>
+#include <filesystem>
 #include "vmd.h"
 #include "FbxShapeUtils.h"
 #include "ConvertEncoding.h"
-#include <iostream>
-#include <filesystem>
 using namespace std;
+
+// 変換状況をデバッグ表示する関数
+void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<string, string> shape_rename_map);
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +18,30 @@ int main(int argc, char *argv[])
         return -1;
     }
     ifstream vmdfile(vmdfilepath, ios::binary);
+
+    // vmdファイルから、表情アニメーション全フレームと、シェイプキーの一覧を取得
+    vector<VMD_SKIN> skindata = ReadAndGetSkinData(vmdfile);
+    vector<string> shapekey_names = GetShapekeyNames(skindata);
+
+    // FBX SDK では UTF-8 で扱う必要あり
+    for (auto &name : shapekey_names)
+    {
+        name = sjis_to_utf8(name);
+    }
+
+    // 引数を用いて、シェイプキー名称の変更前後のマップを作成
+    unordered_map<string, string> shape_rename_map;
+    for (int i = 2; i < argc; ++i)
+    {
+        string arg(argv[i]);
+        size_t pos = arg.find('=');
+        if (pos != string::npos)
+        {
+            string key = arg.substr(0, pos);
+            string value = arg.substr(pos + 1);
+            shape_rename_map[key] = value;
+        }
+    }
 
     // FbxManager, FbxIOSettings の設定と新規Scene の作成
     FbxManager *lSdkManager = FbxManager::Create();
@@ -32,16 +59,6 @@ int main(int argc, char *argv[])
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(lScene, "Take_VMDshapeAnimation");
     FbxAnimLayer *lAnimLayer = FbxAnimLayer::Create(lScene, "BaseAnimation");
     lAnimStack->AddMember(lAnimLayer);
-
-    // 表情アニメーション全フレームと、シェイプキーの一覧を取得
-    vector<VMD_SKIN> skindata = ReadAndGetSkinData(vmdfile);
-    vector<string> shapekey_names = GetShapekeyNames(skindata);
-
-    // FBX SDK では UTF-8 で扱う必要あり
-    for (auto &name : shapekey_names)
-    {
-        name = sjis_to_utf8(name);
-    }
 
     // アニメーションを記録するメッシュの作成
     FbxMesh *lMesh = CreateSquareMesh(lScene);
@@ -69,48 +86,62 @@ int main(int argc, char *argv[])
                 FbxTime lTime;
                 lTime.SetFrame(frame.FrameNo, FbxTime::eFrames30); // MMD は 30fps
                 int keyindex = lCurve->KeyAdd(lTime);
+
                 // MMDでのシェイプキー値は 0~1 なので、fbxに合わせて100倍する
                 lCurve->KeySet(keyindex, lTime, frame.Weight * 100.0, FbxAnimCurveDef::eInterpolationLinear);
 
                 lCurve->KeyModifyEnd();
+
+                // ターミナルに変換状況をデバッグ表示
+                DebugConverting(frame.FrameNo, frame.SkinName, shape_rename_map);
             }
         }
     }
 
     // 名称変更前後のマップ（引数の指定から作成）を元に、既存のシェイプキー名を変更
-    unordered_map<string, string> mapping;
-    for (int i = 2; i < argc; ++i)
-    {
-        string arg(argv[i]);
-        size_t pos = arg.find('=');
-        if (pos != string::npos)
-        {
-            string key = arg.substr(0, pos);
-            string value = arg.substr(pos + 1);
-            mapping[key] = value;
-        }
-    }
-    for (const auto &map : mapping)
+    for (const auto &map : shape_rename_map)
     {
 #ifdef _WIN32
         // Windows のターミナル入力が Shift_JIS
-        string oldname = sjis_to_utf8(map.first);
+        string name_old = sjis_to_utf8(map.first);
 #else
-        string oldname = map.first;
+        string name_old = map.first;
 #endif
-        string newname = map.second;
-        UpdateShapekeyName(lMesh, oldname, newname);
+        string name_new = map.second;
+        UpdateShapekeyName(lMesh, name_old, name_new);
     }
 
     // Scene の出力
     if (lExporter->Export(lScene))
-        cout << "The fbx file successfully exported." << endl;
+        cout << "\nProgram Success!" << endl;
     else
-        cout << "Failed to export test fbx file..." << endl;
+        cout << "\nError occurred while exporting the scene..." << endl;
 
     // Cleanup
     lExporter->Destroy();
     lSdkManager->Destroy();
 
     return 0;
+}
+
+void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<string, string> shape_rename_map)
+{
+    for (const auto &name : shape_rename_map)
+    {
+        string name_old = name.first;
+        string name_new = name.second;
+
+        // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
+#ifdef _WIN32
+        if (name_processing == name_old)
+        {
+            cout << frame_no << " " << name_processing << " -> " << name_new << endl;
+        }
+#else
+        if (sjis_to_utf8(name_processing) == name_old)
+        {
+            cout << frame_no << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
+        }
+#endif
+    }
 }
