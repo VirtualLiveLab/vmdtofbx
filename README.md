@@ -1,7 +1,7 @@
 # vmdtofbx
 vmdファイルに含まれる表情データのみを面のメッシュに記録し、fbx形式にして出力するプロジェクト
 
-<br>
+[DeepWiki](https://deepwiki.com/VirtualLiveLab/vmdtofbx)
 
 ## 環境
 - cmake 3.17 and above
