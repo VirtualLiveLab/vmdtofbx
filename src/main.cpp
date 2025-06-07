@@ -59,6 +59,19 @@ int main(int argc, char *argv[])
 
     bool exporter_prepared = lExporter->Initialize(outputfbxpathStr.c_str(), -1, IOSettings);
 
+    if (exporter_prepared)
+    {
+        cout << "The exporter successfully initialized." << endl;
+        cout << lExporter->GetStatus().GetCode() << endl;
+    }
+    else
+    {
+        cerr << "Initializing the exporter failed..." << endl;
+        vmdfile.close();
+        lSdkManager->Destroy();
+        return -1;
+    }
+
     // FbxAnimStack と FbxAnimationLayer の作成
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(lScene, "Take_VMDshapeAnimation");
     FbxAnimLayer *lAnimLayer = FbxAnimLayer::Create(lScene, "BaseAnimation");
@@ -116,7 +129,10 @@ int main(int argc, char *argv[])
     if (lExporter->Export(lScene))
         cout << "\nProgram Success!" << endl;
     else
+    {
         cout << "\nError occurred while exporting the scene..." << endl;
+        cout << lExporter->GetStatus().GetErrorString() << endl;
+    }
 
     // Cleanup
     vmdfile.close();
