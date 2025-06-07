@@ -60,10 +60,7 @@ int main(int argc, char *argv[])
     bool exporter_prepared = lExporter->Initialize(outputfbxpathStr.c_str(), -1, IOSettings);
 
     if (exporter_prepared)
-    {
         cout << "The exporter successfully initialized." << endl;
-        cout << lExporter->GetStatus().GetCode() << endl;
-    }
     else
     {
         cerr << "Initializing the exporter failed..." << endl;
@@ -143,25 +140,11 @@ int main(int argc, char *argv[])
 
 void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<string, string> shape_rename_map)
 {
-    for (const auto &name : shape_rename_map)
-    {
-        string name_old = name.first;
-        string name_new = name.second;
+    string key = IsShiftJISEnvironment() ? name_processing : sjis_to_utf8(name_processing);
 
-        // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
-        if (IsShiftJISEnvironment())
-        {
-            if (name_processing == name_old)
-            {
-                cout << frame_no << " " << name_processing << " -> " << name_new << endl;
-            }
-        }
-        else
-        {
-            if (sjis_to_utf8(name_processing) == name_old)
-            {
-                cout << frame_no << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
-            }
-        }
+    unordered_map<string, string>::const_iterator it = shape_rename_map.find(key);
+    if (it != shape_rename_map.end())
+    {
+        cout << frame_no << " " << key << " -> " << it->second << endl;
     }
 }
