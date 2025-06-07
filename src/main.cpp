@@ -53,7 +53,11 @@ int main(int argc, char *argv[])
     string fbxfilename = vmdfilepath.stem().string() + ".fbx";
     filesystem::path outputfbxpath = vmdfilepath.parent_path() / fbxfilename;
     FbxExporter *lExporter = FbxExporter::Create(lSdkManager, "");
-    lExporter->Initialize(outputfbxpath.string().c_str(), -1, IOSettings);
+
+    // Initialize() に渡す出力パスが Shift-JIS だった場合、Initialize() は true を返すが Export時にエラーが起きる
+    string outputfbxpathStr = IsShiftJISEnvironment() ? sjis_to_utf8(outputfbxpath.string()) : outputfbxpath.string();
+
+    bool exporter_prepared = lExporter->Initialize(outputfbxpathStr.c_str(), -1, IOSettings);
 
     // FbxAnimStack と FbxAnimationLayer の作成
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(lScene, "Take_VMDshapeAnimation");
@@ -103,13 +107,8 @@ int main(int argc, char *argv[])
     // 名称変更前後のマップ（引数の指定から作成）を元に、既存のシェイプキー名を変更
     for (const auto &map : shape_rename_map)
     {
-#ifdef _WIN32
-        // Windows のターミナル入力が Shift_JIS
-        string name_old = sjis_to_utf8(map.first);
-#else
-        string name_old = map.first;
-#endif
-        string name_new = map.second;
+        std::string name_old = IsShiftJISEnvironment() ? sjis_to_utf8(map.first) : map.first;
+        std::string name_new = map.second;
         UpdateShapekeyName(lMesh, name_old, name_new);
     }
 
@@ -134,16 +133,19 @@ void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<st
         string name_new = name.second;
 
         // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
-#ifdef _WIN32
-        if (name_processing == name_old)
+        if (IsShiftJISEnvironment())
         {
-            cout << frame_no << " " << name_processing << " -> " << name_new << endl;
+            if (name_processing == name_old)
+            {
+                cout << frame_no << " " << name_processing << " -> " << name_new << endl;
+            }
         }
-#else
-        if (sjis_to_utf8(name_processing) == name_old)
+        else
         {
-            cout << frame_no << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
+            if (sjis_to_utf8(name_processing) == name_old)
+            {
+                cout << frame_no << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
+            }
         }
-#endif
     }
 }
