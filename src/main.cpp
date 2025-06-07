@@ -143,6 +143,7 @@ void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<st
 {
     string key = IsShiftJISEnvironment() ? name_processing : sjis_to_utf8(name_processing);
 
+    // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
     unordered_map<string, string>::const_iterator it = shape_rename_map.find(key);
     if (it != shape_rename_map.end())
     {
