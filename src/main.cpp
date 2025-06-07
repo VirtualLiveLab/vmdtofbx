@@ -53,7 +53,22 @@ int main(int argc, char *argv[])
     string fbxfilename = vmdfilepath.stem().string() + ".fbx";
     filesystem::path outputfbxpath = vmdfilepath.parent_path() / fbxfilename;
     FbxExporter *lExporter = FbxExporter::Create(lSdkManager, "");
-    lExporter->Initialize(outputfbxpath.string().c_str(), -1, IOSettings);
+
+    // Initialize() に渡す出力パスが Shift-JIS だった場合、Initialize() は true を返すが Export時にエラーが起きる
+    string outputfbxpathStr = IsShiftJISEnvironment() ? sjis_to_utf8(outputfbxpath.string()) : outputfbxpath.string();
+
+    bool exporter_prepared = lExporter->Initialize(outputfbxpathStr.c_str(), -1, IOSettings);
+
+    if (exporter_prepared)
+        cout << "The exporter successfully initialized." << endl;
+    else
+    {
+        cerr << "Initializing the exporter failed..." << endl;
+        cout << lExporter->GetStatus().GetErrorString() << endl;
+        vmdfile.close();
+        lSdkManager->Destroy();
+        return -1;
+    }
 
     // FbxAnimStack と FbxAnimationLayer の作成
     FbxAnimStack *lAnimStack = FbxAnimStack::Create(lScene, "Take_VMDshapeAnimation");
@@ -103,12 +118,7 @@ int main(int argc, char *argv[])
     // 名称変更前後のマップ（引数の指定から作成）を元に、既存のシェイプキー名を変更
     for (const auto &map : shape_rename_map)
     {
-#ifdef _WIN32
-        // Windows のターミナル入力が Shift_JIS
-        string name_old = sjis_to_utf8(map.first);
-#else
-        string name_old = map.first;
-#endif
+        string name_old = IsShiftJISEnvironment() ? sjis_to_utf8(map.first) : map.first;
         string name_new = map.second;
         UpdateShapekeyName(lMesh, name_old, name_new);
     }
@@ -117,7 +127,10 @@ int main(int argc, char *argv[])
     if (lExporter->Export(lScene))
         cout << "\nProgram Success!" << endl;
     else
+    {
         cout << "\nError occurred while exporting the scene..." << endl;
+        cout << lExporter->GetStatus().GetErrorString() << endl;
+    }
 
     // Cleanup
     vmdfile.close();
@@ -128,22 +141,12 @@ int main(int argc, char *argv[])
 
 void DebugConverting(uint32_t frame_no, string name_processing, unordered_map<string, string> shape_rename_map)
 {
-    for (const auto &name : shape_rename_map)
-    {
-        string name_old = name.first;
-        string name_new = name.second;
+    string key = IsShiftJISEnvironment() ? name_processing : sjis_to_utf8(name_processing);
 
-        // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
-#ifdef _WIN32
-        if (name_processing == name_old)
-        {
-            cout << frame_no << " " << name_processing << " -> " << name_new << endl;
-        }
-#else
-        if (sjis_to_utf8(name_processing) == name_old)
-        {
-            cout << frame_no << " " << sjis_to_utf8(name_processing) << " -> " << name_new << endl;
-        }
-#endif
+    // 現在キー登録中の名前が変換前後のマップに含まれていれば、その対応を出力する
+    unordered_map<string, string>::const_iterator it = shape_rename_map.find(key);
+    if (it != shape_rename_map.end())
+    {
+        cout << frame_no << " " << key << " -> " << it->second << endl;
     }
 }

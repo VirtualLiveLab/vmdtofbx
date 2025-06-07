@@ -3,11 +3,18 @@
 
 #ifdef _WIN32
 #include <fbxsdk.h>
+#include <Windows.h>
 #else
 #include <iconv.h>
 #endif
 
 #ifdef _WIN32
+
+bool IsShiftJISEnvironment()
+{
+    return GetConsoleCP() == 932; // 932 = Shift_JIS
+}
+
 std::string sjis_to_utf8(const std::string &input)
 {
     std::string name_converted;
@@ -24,6 +31,11 @@ std::string sjis_to_utf8(const std::string &input)
 }
 
 #else
+
+bool IsShiftJISEnvironment()
+{
+    return false;
+}
 
 std::string sjis_to_utf8(const std::string &input)
 {
