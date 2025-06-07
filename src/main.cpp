@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
     // 名称変更前後のマップ（引数の指定から作成）を元に、既存のシェイプキー名を変更
     for (const auto &map : shape_rename_map)
     {
-        std::string name_old = IsShiftJISEnvironment() ? sjis_to_utf8(map.first) : map.first;
-        std::string name_new = map.second;
+        string name_old = IsShiftJISEnvironment() ? sjis_to_utf8(map.first) : map.first;
+        string name_new = map.second;
         UpdateShapekeyName(lMesh, name_old, name_new);
     }
 
