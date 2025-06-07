@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
     else
     {
         cerr << "Initializing the exporter failed..." << endl;
+        cout << lExporter->GetStatus().GetErrorString() << endl;
         vmdfile.close();
         lSdkManager->Destroy();
         return -1;
